@@ -19,9 +19,14 @@ from . import views
 
 urlpatterns = [
     path('', views.home),
-        #Post & Get User
+    
+     #Post & Get User
     path('api/users', views.user),
     path('api/users/<int:pk>', views.user),
-    
+
+     #Post & Get Vehicle
+    path('api/vehicles', views.vehicle),
+    path('api/vehicles/<int:pk>', views.vehicle),
+
     path('admin/', admin.site.urls),
 ]
