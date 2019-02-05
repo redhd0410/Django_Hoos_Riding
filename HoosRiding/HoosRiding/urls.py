@@ -19,5 +19,9 @@ from . import views
 
 urlpatterns = [
     path('', views.home),
+        #Post & Get User
+    path('api/users', views.user),
+    path('api/users/<int:pk>', views.user),
+    
     path('admin/', admin.site.urls),
 ]
