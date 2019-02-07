@@ -6,4 +6,5 @@ models:
     - ~/cs4501/app:/app
   ports:
     - "8001:8000"
-  command: bash -c "mod_wsgi-express start-server --working-directory /app/HoosRiding --reload-on-changes /app/HoosRiding/HoosRiding/wsgi.py && python3 manage.py loaddata HoosRiding/db.json"
+  command: bash -c "mod_wsgi-express start-server --working-directory /app/HoosRiding --reload-on-changes /app/HoosRiding/HoosRiding/wsgi.py && python3 /app/HoosRiding/manage.py makemigrations && python3 /app/HoosRiding/manage.py migrate && python3 manage.py loaddata HoosRiding/db.json"
+
