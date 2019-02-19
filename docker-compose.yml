@@ -1,0 +1,32 @@
+models:
+  image: tp33/django
+  container_name: models-api
+  external_links:
+    - mysql:db
+  volumes:
+    - ./models:/app
+  ports:
+    - "8001:8000"
+  command: bash -c "python ./manage.py makemigrations models && python ./manage.py migrate models && mod_wsgi-express start-server --working-directory ./ --reload-on-changes ./models/wsgi.py && python manage.py loaddata ./db.json"
+
+exp:
+  image: tp33/django
+  container_name: exp-api
+  links:
+    - models:models-api
+  ports:
+    - "8002:8000"
+  volumes:
+    - ./experience:/app
+  command: "mod_wsgi-express start-server --reload-on-changes ./experience/wsgi.py"
+
+web:
+  image: tp33/django
+  container_name: web
+  links:
+    - exp:exp-api
+  ports:
+    - "8000:8000"
+  volumes:
+    - ./web:/app
+  command: "mod_wsgi-express start-server --reload-on-changes ./web/wsgi.py"
