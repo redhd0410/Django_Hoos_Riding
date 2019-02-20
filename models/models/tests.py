@@ -88,6 +88,10 @@ class RideTestCase(TestCase):
         Vehicle.objects.create(license_plate="123ABC", model="Toyota", color="yellow", driver=User.objects.get(pk=1), id=1)
         Ride.objects.create(vehicle=Vehicle.objects.get(pk=1), start="DC", destination="New York", depart_time="02/23/17", seats_offered=3, price=80, id = 1)
 
+    def test_ride_get_request_param(self):
+        response = self.client.get(reverse('ride_result_id', kwargs={'pk':1}))
+        self.assertContains(response, 'destination')
+
     def test_create_ride(self):
         data = {
             "vehicle": 1, 
