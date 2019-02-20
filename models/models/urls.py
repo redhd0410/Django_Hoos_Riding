@@ -19,22 +19,22 @@ from . import views
 
 urlpatterns = [
     # Post & Get Many User
-    path('api/users', views.user),
+    path('api/users', views.user, name = "user_result"),
     # Update/Delete/Get a User
-    path('api/users/<int:pk>', views.user),
+    path('api/users/<int:pk>', views.user, name = "user_result_id"),
 
 
     # Post & Get Many Vehicle
-    path('api/vehicles', views.vehicle),
+    path('api/vehicles', views.vehicle, name = "vehicle_result"),
     # Update Vehicle & Get Vehicle
-    path('api/vehicles/<int:pk>', views.vehicle),
+    path('api/vehicles/<int:pk>', views.vehicle, name = "vehicle_result_id"),
 
 
     # Post & Get Many Rides
-    path('api/rides', views.ride),
+    path('api/rides', views.ride, name = "rides_result"),
     #Get/Delete Single Ride
-    path('api/rides/<int:pk>', views.ride),
+    path('api/rides/<int:pk>', views.ride, name = "rides_result_id"),
     # Update Ride
-    path('api/rides/<int:pk>/<int:uid>', views.ride),
+    path('api/rides/<int:pk>/<int:uid>', views.ride, name = "rides_result_uid"),
 
 ]
