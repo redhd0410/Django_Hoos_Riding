@@ -6,13 +6,6 @@ import json
 from models.models import User, Vehicle, Ride
 from django.core.exceptions import ObjectDoesNotExist
 
-"""
-Questions: 
-
-- How do I handle expected exceptions
-- How do I destroy instances from setup 
-
-"""
 
 class UserTestCase(TestCase):
 
