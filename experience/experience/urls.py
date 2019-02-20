@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('experience/homepage/get', views.getHomePage),
+    path('experience/detailpage/get', views.getDetailPage),
 ]
+
+ #path('experience/homepage/update/<int:user_id>/<int:ride_id>', views.UpdateRide),
+    #path('experience/homepage/remove/<int:user_id>/<int:ride_id>', views.RemoveSelfRide),

@@ -80,6 +80,7 @@ class VehicleTestCase(TestCase):
             pass
     
 class RideTestCase(TestCase):
+
     def setUp(self):
         User.objects.create(first_name="Jiwon", last_name="Cha", phone_number="1209381092", profile_url="www.google.com", id = 1)
         User.objects.create(first_name="Pablo", last_name="Ramos", phone_number="12381274", profile_url="www.google.com", id = 2)
@@ -119,3 +120,32 @@ class RideTestCase(TestCase):
             faulty_access = self.client.get(reverse('ride_result_id', kwargs={'pk':1}))
         except ObjectDoesNotExist:
             pass
+
+class HelperMethodTestCase(TestCase):
+
+    def setUp(self):
+        User.objects.create(first_name="Jiwon", last_name="Cha", phone_number="1209381092", profile_url="www.google.com", id = 1)
+        User.objects.create(first_name="Pablo", last_name="Ramos", phone_number="12381274", profile_url="www.google.com", id = 2)
+        User.objects.create(first_name="Angelina", last_name="Jolie", phone_number="98732487", profile_url="www.google.com", id = 3)
+        User.objects.create(first_name="Johnny", last_name="Depp", phone_number="878372384", profile_url="www.google.com", id = 4)
+        Vehicle.objects.create(license_plate="123ABC", model="Toyota", color="yellow", driver=User.objects.get(pk=1), id=1)
+        Ride.objects.create(vehicle=Vehicle.objects.get(pk=1), start="DC", destination="New York", depart_time="02/23/17", seats_offered=3, price=80, id = 1)
+        Ride.objects.create(vehicle=Vehicle.objects.get(pk=2), start="Cville", destination="Montana", depart_time="12/25/19", seats_offered=4, price=20, id = 2)
+
+
+    # URL format : 'api/rides/n/<int:n>/date/<str:date>/<int:is_after>'
+    def test_getNSoonestRides_param(self):
+        response = self.client.get(reverse('getNSoonestRides', kwargs={'n':1, 'date':'2020-02-02-20', 'is_after':0}))
+        print(response)
+        self.assertContains(response, "date")
+
+    # URL format : 'api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>'
+    def test_getDriverRideHistory_param(self):
+        response = self.client.get(reverse('getDriverRideHistory', 
+                   kwargs={'n':5, 'date':'2020-20-02-10', 'is_after':1, 'pk':1}))
+        self.assertContains(response, "date")
+
+    # URL format : 'api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>'
+    def test_getNUserRideHistory_param(self):
+        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':5, 'date':"2020-20-02-10", 'is_after':1, 'pk': 3}))
+        self.assertContains(response, "date")
