@@ -24,24 +24,24 @@ urlpatterns = [
     path('api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getNUserRideHistory),
     path('api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getDriverRideHistory),
     #SINGLE#########################################
-    
-    # Post
-    path('api/user', views.user),
+   
+    # Post & Get Many User
+    path('api/users', views.user, name = "user_result"),
     # Update/Delete/Get a User
-    path('api/user/id/<int:pk>', views.user),
+    path('api/users/<int:pk>', views.user, name = "user_result_id"),
 
 
-    # Post
-    path('api/vehicle', views.vehicle),
-    # Update/Delete/Get Vehicle
-    path('api/vehicle/id/<int:pk>', views.vehicle),
+    # Post & Get Many Vehicle
+    path('api/vehicles', views.vehicle, name = "vehicle_result"),
+    # Update Vehicle & Get Vehicle
+    path('api/vehicles/<int:pk>', views.vehicle, name = "vehicle_result_id"),
 
 
-    # Post
-    path('api/ride', views.ride),
+    # Post & Get Many Rides
+    path('api/rides', views.ride, name = "ride_result"),
     #Get/Delete Single Ride
-    path('api/ride/id/<int:pk>', views.ride),
-    # Update Ride with passenger
-    path('api/ride/id/<int:pk>/pid/<int:uid>', views.ride),
+    path('api/rides/<int:pk>', views.ride, name = "ride_result_id"),
+    # Update Ride
+    path('api/rides/<int:pk>/<int:uid>', views.ride, name = "ride_result_uid"),
 
 ]

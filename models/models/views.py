@@ -127,7 +127,7 @@ def vehicle(request, pk=-1):
         json_data = json.loads(str(request.body, encoding='utf-8'))
         user = User.objects.get(pk=json_data['driver'])
         Vehicle.objects.filter(pk=pk).update(driver=user,license_plate=json_data['license_plate'],
-                          model=json_data['model'], color=json_data['color'], capacity=json_data['capacity'])
+                          model=json_data['model'], color=json_data['color'])
         return JsonResponse(json_data)
 
 # pk - vehicle id 
@@ -178,8 +178,13 @@ def ride(request, pk=-1, uid = -1):
             seats_offered = json_data['seats_offered']
             )
         ride.save()
+<<<<<<< HEAD
         return JsonResponse({"key":"val"})
         
+=======
+
+        return JsonResponse(json_data)
+>>>>>>> 08d2e216e49b19435640398617bad1e544bd0c6c
     elif request.method == 'PUT':
         if(uid != -1):
             ride = Ride.objects.get(pk=pk)
