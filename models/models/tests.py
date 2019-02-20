@@ -115,3 +115,10 @@ class RideTestCase(TestCase):
     def test_add_passengers_to_ride(self):
         response = self.client.put(reverse('ride_result_uid', kwargs={'pk':1, 'uid':2}))
         self.assertContains(response, "success")
+
+    def test_delete_ride(self):
+        response = self.client.delete(reverse('ride_result_id', kwargs={'pk':1}))
+        try: 
+            faulty_access = self.client.get(reverse('ride_result_id', kwargs={'pk':1}))
+        except ObjectDoesNotExist:
+            pass
