@@ -31,10 +31,10 @@ urlpatterns = [
 
 
     # Post & Get Many Rides
-    path('api/rides', views.ride, name = "rides_result"),
+    path('api/rides', views.ride, name = "ride_result"),
     #Get/Delete Single Ride
-    path('api/rides/<int:pk>', views.ride, name = "rides_result_id"),
+    path('api/rides/<int:pk>', views.ride, name = "ride_result_id"),
     # Update Ride
-    path('api/rides/<int:pk>/<int:uid>', views.ride, name = "rides_result_uid"),
+    path('api/rides/<int:pk>/<int:uid>', views.ride, name = "ride_result_uid"),
 
 ]
