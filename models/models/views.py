@@ -6,10 +6,57 @@ from django.forms.models import model_to_dict
 import json
 from .models import User, Vehicle, Ride
 
+#Helper method
+#Convert rides queryset into dict & filters by depart time
+def convertRidesToDict(rides, date, is_after):
+
+    if is_after == 0 or is_after == 1:
+        pass
+    else:
+        return JsonResponse({"error":"Improper is after formatting!"})
+
+    date = date.replace('-', '/')
+    rides_as_dict = {}
+
+    for ride in rides:
+        rides_as_dict[ride.id] = {
+            'ride_id': ride.id,
+            'vehicle': ride.vehicle.id,
+            'passengers': [user.id for user in model_to_dict(ride)['passengers']],
+            'destination': ride.destination,
+            'start': ride.start,
+            'depart_time': ride.depart_time,
+            'seats_offered':ride.seats_offered,
+            'price':ride.price
+        }  
+
+    if(is_after):
+        rides_as_dict = {rid: ride for rid,ride in rides_as_dict.items() if ride['depart_time'] > date } 
+    else:
+        rides_as_dict = {rid: ride for rid,ride in rides_as_dict.items() if ride['depart_time'] <= date } 
+    
+    return rides_as_dict
+
+#Query Methods
+def getDriverRideHistory(request, pk, n, date, is_after):
+    vehicles = Vehicle.objects.filter(driver = pk)
+    rides_for_all_vehicles = {}
+    for vehicle in vehicles:
+        rides = Ride.objects.filter(vehicle = vehicle.id).order_by('depart_time')[:n]
+        rides_for_all_vehicles[vehicle.id] = convertRidesToDict(rides, date, is_after)
+    return JsonResponse(rides_for_all_vehicles)
+
+def getNUserRideHistory(request, pk, n, date, is_after):
+    rides = Ride.objects.filter(passengers=pk).order_by('depart_time')[:n]
+    return JsonResponse(convertRidesToDict(rides, date, is_after))
+
+def getNSoonestRides(request, n, date, is_after):
+    rides = Ride.objects.all().order_by('depart_time')[:n]
+    return JsonResponse(convertRidesToDict(rides, date, is_after))
+
 @csrf_exempt
 def user(request, pk=-1):
-
-# pk:int - this is user id 
+# pk:int - this is user id
     if request.method == 'GET':
         user = User.objects.get(pk=pk)
         return JsonResponse(model_to_dict(user))
@@ -96,11 +143,14 @@ def ride(request, pk=-1, uid = -1):
 
 # pk - ride id
     if request.method == 'GET':
+        if(uid != -1):
+            return JsonResponse({"error": "improper url"})
+
         ride = Ride.objects.get(pk=pk)
         vehicle = ride.vehicle
         passengers = User.objects.filter(ride=pk)
         return JsonResponse({
-            'vehicle': model_to_dict(vehicle),
+            'vehicle': vehicle.id,
             'passengers': [model_to_dict(x)['id'] for x in passengers],
             'destination': ride.destination,
             'start': ride.start,
@@ -128,16 +178,18 @@ def ride(request, pk=-1, uid = -1):
             seats_offered = json_data['seats_offered']
             )
         ride.save()
-
         return JsonResponse({"key":"val"})
+        
     elif request.method == 'PUT':
         if(uid != -1):
             ride = Ride.objects.get(pk=pk)
-            passenger = User.objects.get(pk=uid)
-            if(ride.vehicle.driver.id == passenger.id):
+            prospective_rider = User.objects.get(pk=uid)
+            passengers = User.objects.filter(ride=pk)
+            
+            if(ride.vehicle.driver.id == prospective_rider.id):
                 return JsonResponse({"key":"error"})
             else:
-                ride.passengers.add(passenger)
+                ride.passengers.add(prospective_rider)
             return JsonResponse({"key": "success"})
 
 # driver:int - user id (making request to create)

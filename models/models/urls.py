@@ -9,7 +9,7 @@ Function views
 Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
+    Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
@@ -18,23 +18,30 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Post & Get Many User
-    path('api/users', views.user),
+
+    #MANY###########################################
+    path('api/rides/n/<int:n>/date/<str:date>/<int:is_after>',views.getNSoonestRides),
+    path('api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getNUserRideHistory),
+    path('api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getDriverRideHistory),
+    #SINGLE#########################################
+    
+    # Post
+    path('api/user', views.user),
     # Update/Delete/Get a User
-    path('api/users/<int:pk>', views.user),
+    path('api/user/id/<int:pk>', views.user),
 
 
-    # Post & Get Many Vehicle
-    path('api/vehicles', views.vehicle),
-    # Update Vehicle & Get Vehicle
-    path('api/vehicles/<int:pk>', views.vehicle),
+    # Post
+    path('api/vehicle', views.vehicle),
+    # Update/Delete/Get Vehicle
+    path('api/vehicle/id/<int:pk>', views.vehicle),
 
 
-    # Post & Get Many Rides
-    path('api/rides', views.ride),
+    # Post
+    path('api/ride', views.ride),
     #Get/Delete Single Ride
-    path('api/rides/<int:pk>', views.ride),
-    # Update Ride
-    path('api/rides/<int:pk>/<int:uid>', views.ride),
+    path('api/ride/id/<int:pk>', views.ride),
+    # Update Ride with passenger
+    path('api/ride/id/<int:pk>/pid/<int:uid>', views.ride),
 
 ]
