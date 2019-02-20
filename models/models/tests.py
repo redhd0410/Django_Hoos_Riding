@@ -111,3 +111,7 @@ class RideTestCase(TestCase):
     def test_get_ride(self):
         response = self.client.get(reverse('ride_result_id', kwargs={'pk':1}))
         self.assertEqual(response.json()['start'], "DC")
+
+    def test_add_passengers_to_ride(self):
+        response = self.client.put(reverse('ride_result_uid', kwargs={'pk':1, 'uid':2}))
+        self.assertContains(response, "success")
