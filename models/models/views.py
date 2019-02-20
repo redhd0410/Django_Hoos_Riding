@@ -129,7 +129,7 @@ def ride(request, pk=-1, uid = -1):
             )
         ride.save()
 
-        return JsonResponse({"key":"val"})
+        return JsonResponse(json_data)
     elif request.method == 'PUT':
         if(uid != -1):
             ride = Ride.objects.get(pk=pk)
