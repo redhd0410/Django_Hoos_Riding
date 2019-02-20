@@ -4,6 +4,7 @@ import urllib.request
 import urllib.parse
 import json
 from models.models import User, Vehicle, Ride
+from django.core.exceptions import ObjectDoesNotExist
 
 """
 Questions: 
@@ -47,7 +48,12 @@ class UserTestCase(TestCase):
         response = self.client.put(reverse('user_result_id', kwargs={'pk':1}), data, content_type="application/json")
         self.assertEqual(response.json()['first_name'], "Joan")
 
-        
+    def test_user_delete_request(self):
+        response = self.client.delete(reverse('user_result_id', kwargs={'pk':1}))
+        try: 
+            faulty_access = self.client.get(reverse('user_result_id', kwargs={'pk':1}))
+        except ObjectDoesNotExist:
+            pass
 
 class VehicleTestCase(TestCase):
     def setUp(self):
@@ -72,6 +78,13 @@ class VehicleTestCase(TestCase):
         }
         response = self.client.put(reverse('vehicle_result_id', kwargs={'pk':1}), data, content_type="application/json")
         self.assertEqual(response.json()['model'], "Ford")
+
+    def test_vehicle_delete_request(self):
+        response = self.client.delete(reverse('vehicle_result_id', kwargs={'pk':1}))
+        try: 
+            faulty_access = self.client.get(reverse('vehicle_result_id', kwargs={'pk':1}))
+        except ObjectDoesNotExist:
+            pass
     
 class RideTestCase(TestCase):
     def setUp(self):
@@ -80,7 +93,7 @@ class RideTestCase(TestCase):
         User.objects.create(first_name="Angelina", last_name="Jolie", phone_number="98732487", profile_url="www.google.com", id = 3)
         User.objects.create(first_name="Johnny", last_name="Depp", phone_number="878372384", profile_url="www.google.com", id = 4)
         Vehicle.objects.create(license_plate="123ABC", model="Toyota", color="yellow", driver=User.objects.get(pk=1), id=1)
-        Ride.objects.create(vehicle=Vehicle.objects.get(pk=1), start="DC", destination="New York", depart_time="02/23/17", seats_offered=3, price=80)
+        Ride.objects.create(vehicle=Vehicle.objects.get(pk=1), start="DC", destination="New York", depart_time="02/23/17", seats_offered=3, price=80, id = 1)
 
     def test_create_ride(self):
         data = {
@@ -95,7 +108,6 @@ class RideTestCase(TestCase):
         response = self.client.post(reverse('ride_result'), data, content_type="application/json")
         self.assertEqual(response.json()['start'], "Cville")
 
-    def test_add_passengers_to_ride(self):
-        response = self.client.put(reverse('ride_result_uid', kwargs={'pk':1, 'uid':2}))
-        self.assertContains(response, "success")
-    
+    def test_get_ride(self):
+        response = self.client.get(reverse('ride_result_id', kwargs={'pk':1}))
+        self.assertEqual(response.json()['start'], "DC")
