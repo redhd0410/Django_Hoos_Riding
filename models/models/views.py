@@ -14,6 +14,22 @@ from .models import User, Vehicle, Ride
 # date = 2020/20/02/10 & is_after = True then,
 # It's gonna fetch all rides after 2020/20/02/10
 
+def convertTime(date):
+    date = date[11:]
+    am_or_pm = 'am'
+    time = int(date)
+    if(time>12):
+        time = time - 12
+        am_or_pm = 'pm'
+    return str(time)+am_or_pm
+
+def convertToDate(date):
+
+    day = date[8:11]
+    month = date[5:7]
+    year = date[:4]
+    return str(day+month+'/'+year)
+
 def convertRidesToDict(rides):
 
     rides_as_dict = {}
@@ -25,7 +41,8 @@ def convertRidesToDict(rides):
             'passengers': [user.id for user in model_to_dict(ride)['passengers']],
             'destination': ride.destination,
             'start': ride.start,
-            'depart_time': ride.depart_time,
+           'hr': convertTime(ride.depart_time),
+            'date': convertToDate(ride.depart_time),
             'seats_offered':ride.seats_offered,
             'price':ride.price
         }  
