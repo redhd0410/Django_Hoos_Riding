@@ -9,6 +9,7 @@
         <h1>Ride Details
         </h1>
         <div class="card">
+            {% for key, values in most_recent_rides_available %}
             <div class="card-body">
               <h5 class="card-title">Logistics</h5>
               <h6 class="card-subtitle "">From : </h6><br>
@@ -30,5 +31,7 @@
               <h6 class="card-subtitle "">Name : </h6>
             </div>
           </div>
+          <div class="mx-auto" style="width: 500px;">
+            <button type="button" class="btn btn-primary btn-lg btn-block">Join Ride</button></body></div>            
     </body>
 </html>

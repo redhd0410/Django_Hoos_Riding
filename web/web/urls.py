@@ -19,5 +19,5 @@ from web import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'', views.homepage),
-    path('ridedetails/', views.ridedetails),
+    path('ridedetails/<int:pk>', views.ridedetails),
 ]

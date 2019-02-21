@@ -44,7 +44,7 @@ def getHomePage(request):
     passenger_current_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 1))
     passenger_past_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 0))
 
-    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, '2020-02-20-20',0))
+    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, '2020-02-20-20',1))
  
     return JsonResponse({
         "driver_current_rides":driver_current_rides,

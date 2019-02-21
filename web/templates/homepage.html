@@ -21,27 +21,16 @@
                   </tr>
                 </thead>
                 <tbody>
+                    {% for key, values in most_recent_rides_available.items %}
                   <tr>
-                    <th scope="row">{{ most_recent_rides_available.4.start }}</th>
-                    <td>{{ most_recent_rides_available.4.destination }}</td>
-                    <td>2:00PM</td>
-                    <td>2/2/2019</td>
-                    <td>4/5</td>
+                    <td>{{ values.start }}</td>
+                    <td>{{ values.destination }}</td>
+                    <td>{{ values.hr }}</td>
+                    <td>{{ values.date }}</td>
+                    <td>{{ values.seats_offered }}</td>
                   </tr>
-                  <tr>
-                    <th scope="row">Cville</th>
-                    <td>Arlington</td>
-                    <td>2:00PM</td>
-                    <td>2/2/2019</td>
-                    <td>4/5</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Cville</th>
-                    <td>Arlington</td>
-                    <td>2:00PM</td>
-                    <td>2/2/2019</td>
-                    <td>4/5</td>
-                  </tr>
+                  {% endfor %}
+                 
                 </tbody>
               </table>
     </body>
