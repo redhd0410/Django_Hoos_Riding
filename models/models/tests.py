@@ -164,9 +164,12 @@ class HelperMethodTestCase(TestCase):
         self.assertContains(response, "error")
 
     # URL format : 'api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>'
-    def test_getNUserRideHistory_param(self):
-        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':5, 'date':"2000-20-02-10", 'is_after':1, 'pk': 3}))
-        self.assertContains(response, "date")
-    
     def test_getNUserRideHistory(self):
-        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':2, 'date':"2000-20-02-10", 'is_after':1, 'pk': 3}))
+        add_user = self.client.put(reverse('ride_result_uid', kwargs={'pk':1, 'uid':3}))
+        add_user2 = self.client.put(reverse('ride_result_uid', kwargs={'pk':2, 'uid':3}))
+        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':2, 'date':"2000-20-02-10", 'is_after':0, 'pk': 3}))
+        self.assertContains(response, "02/23/17")
+
+    def test_getNUserRideHistory_incorrect(self):
+        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':2, 'date':"2000-20-02-10", 'is_after':3, 'pk': 1}))
+        self.assertContains(response, "error")
