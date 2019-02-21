@@ -129,23 +129,44 @@ class HelperMethodTestCase(TestCase):
         User.objects.create(first_name="Angelina", last_name="Jolie", phone_number="98732487", profile_url="www.google.com", id = 3)
         User.objects.create(first_name="Johnny", last_name="Depp", phone_number="878372384", profile_url="www.google.com", id = 4)
         Vehicle.objects.create(license_plate="123ABC", model="Toyota", color="yellow", driver=User.objects.get(pk=1), id=1)
+        Vehicle.objects.create(license_plate="ZXY982", model="Ford", color="black", driver=User.objects.get(pk=2), id=2)
         Ride.objects.create(vehicle=Vehicle.objects.get(pk=1), start="DC", destination="New York", depart_time="02/23/17", seats_offered=3, price=80, id = 1)
         Ride.objects.create(vehicle=Vehicle.objects.get(pk=2), start="Cville", destination="Montana", depart_time="12/25/19", seats_offered=4, price=20, id = 2)
 
 
     # URL format : 'api/rides/n/<int:n>/date/<str:date>/<int:is_after>'
     def test_getNSoonestRides_param(self):
-        response = self.client.get(reverse('getNSoonestRides', kwargs={'n':1, 'date':'2020-02-02-20', 'is_after':0}))
-        print(response)
-        self.assertContains(response, "date")
+        response = self.client.get(reverse('getNSoonestRides', kwargs={'n':1, 'date':'2000-02-02-20', 'is_after':0}))
+        self.assertContains(response, "depart_time")
+
+    def test_getNSoonestRides(self):
+        response = self.client.get(reverse('getNSoonestRides', kwargs={'n':1, 'date':'2000-02-02-20', 'is_after':0}))
+        self.assertContains(response, "DC")
+
+    def test_getNSoonestRides_incorrect(self):
+        response = self.client.get(reverse('getNSoonestRides', kwargs={'n':1, 'date':'2000-02-02-20', 'is_after':2}))
+        self.assertContains(response, "error")
 
     # URL format : 'api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>'
     def test_getDriverRideHistory_param(self):
         response = self.client.get(reverse('getDriverRideHistory', 
-                   kwargs={'n':5, 'date':'2020-20-02-10', 'is_after':1, 'pk':1}))
-        self.assertContains(response, "date")
+                   kwargs={'n':2, 'date':'2000-20-02-10', 'is_after':0, 'pk':1}))
+        self.assertContains(response, "depart_time")
+
+    def test_getDriverRideHistory(self):
+        response = response = self.client.get(reverse('getDriverRideHistory', 
+                   kwargs={'n':2, 'date':'2000-20-02-10', 'is_after':0, 'pk':2}))
+        self.assertContains(response, "Cville")
+
+    def test_getDriverRideHistory_incorrect(self):
+        response = response = self.client.get(reverse('getDriverRideHistory', 
+                   kwargs={'n':2, 'date':'2000-20-02-10', 'is_after':2, 'pk':2}))
+        self.assertContains(response, "error")
 
     # URL format : 'api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>'
     def test_getNUserRideHistory_param(self):
-        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':5, 'date':"2020-20-02-10", 'is_after':1, 'pk': 3}))
+        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':5, 'date':"2000-20-02-10", 'is_after':1, 'pk': 3}))
         self.assertContains(response, "date")
+    
+    def test_getNUserRideHistory(self):
+        response = self.client.get(reverse('getNUserRideHistory', kwargs={'n':2, 'date':"2000-20-02-10", 'is_after':1, 'pk': 3}))

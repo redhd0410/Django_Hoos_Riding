@@ -20,7 +20,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('experience/homepage/get', views.getHomePage),
-    path('experience/detailpage/get', views.getDetailPage),
+    path('experience/detailpage/get/<int:pk>', views.getDetailPage),
 ]
 
  #path('experience/homepage/update/<int:user_id>/<int:ride_id>', views.UpdateRide),
