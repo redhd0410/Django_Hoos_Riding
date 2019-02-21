@@ -20,12 +20,12 @@ from . import views
 urlpatterns = [
 
     #MANY###########################################
-    
     path('api/rides/n/<int:n>/date/<str:date>/<int:is_after>',views.getNSoonestRides, name = "getNSoonestRides"),
     path('api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getNUserRideHistory, name = "getNUserRideHistory"),
     path('api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getDriverRideHistory, name = "getDriverRideHistory"),
+    
+    
     #SINGLE#########################################
-   
     # Post & Get Many User
     path('api/users', views.user, name = "user_result"),
     # Update/Delete/Get a User

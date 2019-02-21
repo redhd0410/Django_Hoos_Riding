@@ -6,27 +6,76 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 
-
 #helper method
+
+# Home Page
 def createDriverURL(driver_id, number_of_rides, date, is_after):
     return 'http://models-api:8000/api/user/driver/id/'+str(driver_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
+
+def createPassengerURL(rider_id, number_of_rides, date, is_after):
+    return 'http://models-api:8000/api/user/id/'+str(rider_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
+
+def createFetchAvailableRides(number_of_rides, date, is_after):
+    return 'http://models-api:8000/api/rides/n/'+str(number_of_rides)+'/date/'+str(date)+'/'+str(is_after)
+
+# Detail Methods
+def getRide(id):
+    return getJsonFromRequest('http://models-api:8000/api/rides/'+str(id))
+def getVehicle(id):
+    return getJsonFromRequest('http://models-api:8000/api/vehicles/'+str(id))
+
+def getUser(id):
+    return getJsonFromRequest('http://models-api:8000/api/users/'+str(id))
+
+
+def getJsonFromRequest(url):
+    req = urllib.request.Request(url)
+    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
+    return json.loads(resp_json)
 
 def getHomePage(request):
     # Prob have a set of variables
 
     # Calling the Ride offered by the driver
-    req = urllib.request.Request(createDriverURL(1, 5, '2020-02-20-20', 1))
-    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
-    driver_current_rides = json.loads(resp_json)
+  
+    driver_current_rides = getJsonFromRequest(createDriverURL(1, 5, '2020-02-20-20', 1))
+    driver_past_rides = getJsonFromRequest(createDriverURL(1, 5, '2020-02-20-20', 0))
 
-    req = urllib.request.Request(createDriverURL(1, 5, '2020-02-20-20', 0))
-    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
-    driver_past_rides = json.loads(resp_json)    
+    passenger_current_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 1))
+    passenger_past_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 0))
 
+    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, '2020-02-20-20',0))
+ 
     return JsonResponse({
         "driver_current_rides":driver_current_rides,
-        "driver_previous_rides":driver_past_rides
+        "driver_previous_rides":driver_past_rides,
+        "rides_getting_current_rides": passenger_current_rides,
+        "rides_getting_past": passenger_past_rides,
+        "most_recent_rides_available": most_recent_ride_availible
         })
+        
 
-def getDetailPage():
-    print("s")
+def getDetailPage(request, pk):
+
+    ride_json = getRide(pk)
+    passengers = ride_json['passengers']
+    vehicle_json = getVehicle(ride_json['vehicle'])
+    driver_json = getUser(vehicle_json['driver'])
+    
+    #cleaning up needless data
+    del vehicle_json['driver']
+
+    passengers_json = {}
+
+    for passenger in passengers:
+        passengers_json[str(passenger)] = getUser(passenger)
+    
+    #get vehicle info // lP, model, color
+    #get driver info // FN, LN, P#, Profile URL
+    #get passenger info // FN, LN, P#, Profile URL
+
+    return JsonResponse({
+        "driver": driver_json,
+        "passengers":passengers_json,
+        "vehicle": vehicle_json
+    })
