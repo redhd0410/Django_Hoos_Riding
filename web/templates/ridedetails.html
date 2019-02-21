@@ -9,26 +9,33 @@
         <h1>Ride Details
         </h1>
         <div class="card">
-            {% for key, values in most_recent_rides_available %}
+     
             <div class="card-body">
               <h5 class="card-title">Logistics</h5>
-              <h6 class="card-subtitle "">From : </h6><br>
-              <h6 class="card-subtitle "">To : </h6><br>
-              <h6 class="card-subtitle "">Date : </h6>
+              <h6 class="card-subtitle "">From : {{ride.start}} </h6><br>
+              <h6 class="card-subtitle "">To : {{ride.destination}}</h6><br>
+              <h6 class="card-subtitle "">Date : {{ride.depart_time}} </h6>
             </div>
           </div>
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Driver's Information</h5>
-              <h6 class="card-subtitle "">Name : </h6><br>
-              <h6 class="card-subtitle "">Phone Number : </h6>
+              <h6 class="card-subtitle "">Name : {{driver.first_name}} {{driver.last_name}}</h6><br>
+              <h6 class="card-subtitle "">Phone Number :{{driver.phone}} </h6>
             </div>
           </div>
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Passengers</h5>
-              <h6 class="card-subtitle "">Name : </h6><br>
-              <h6 class="card-subtitle "">Name : </h6>
+              {% for key, values in passengers.items %}
+              <div class = "card-passenger">
+                
+                  <br>
+                  <h6 class="card-subtitle ">Name : {{values.first_name}} {{values.last_name}}</h6>
+                  <img src="{{values.profile_url}}"class = "center" style="width:100px; height:100x;">
+                  <br>
+                </div>
+                {% endfor %}
             </div>
           </div>
           <div class="mx-auto" style="width: 500px;">

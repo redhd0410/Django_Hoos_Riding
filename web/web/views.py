@@ -15,6 +15,6 @@ def homepage(request):
     ride_information = getJsonFromRequest("http://exp-api:8000/experience/homepage/get")
     return render(request,'homepage.html', ride_information)
 
-def ridedetails(request):
-     ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/1")
+def ridedetails(request, pk):
+    ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk))
     return render(request,'ridedetails.html', ride_information)

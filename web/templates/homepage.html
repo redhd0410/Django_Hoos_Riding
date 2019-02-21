@@ -23,7 +23,7 @@
                 <tbody>
                     {% for key, values in most_recent_rides_available.items %}
                   <tr>
-                    <td>{{ values.start }}</td>
+                    <td><a href='/ridedetails/{{ key }}'> {{ values.start }}</a></td>
                     <td>{{ values.destination }}</td>
                     <td>{{ values.hr }}</td>
                     <td>{{ values.date }}</td>

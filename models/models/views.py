@@ -79,10 +79,13 @@ def getNUserRideHistory(request, pk, n, date, is_after):
         return JsonResponse({"error": "Incorrect 'is_after' param! Should be 1 or 0 "})
 
 
+    
+
 
 # Home page thing, get rides from the soonest
 def getNSoonestRides(request, n, date, is_after):
     date = date.replace('-', '/')
+
     #Gets all rides sorted where I get N rides that are oldest
     if(is_after == 1):
         rides = Ride.objects.filter(depart_time__gt = date).order_by('depart_time')[:n]

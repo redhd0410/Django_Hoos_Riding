@@ -62,7 +62,7 @@ def getDetailPage(request, pk):
     vehicle_json = getVehicle(ride_json['vehicle'])
     driver_json = getUser(vehicle_json['driver'])
     
-    passengers_json = {"seats_offered": ride_json['seats_offered']}
+#    seats_offered_json =ride_json['seats_offered']
 
     #cleaning up needless data
     del vehicle_json['driver']
@@ -70,6 +70,7 @@ def getDetailPage(request, pk):
     del ride_json['seats_offered']
     del ride_json['vehicle']
 
+    passengers_json = {}
 
     for passenger in passengers:
         passengers_json[str(passenger)] = getUser(passenger)
@@ -79,6 +80,7 @@ def getDetailPage(request, pk):
     #get passenger info // FN, LN, P#, Profile URL
 
     return JsonResponse({
+   #    "seats_offered": seats_offered_json,
         "ride": ride_json,
         "driver": driver_json,
         "passengers":passengers_json,
