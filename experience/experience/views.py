@@ -34,17 +34,17 @@ def getJsonFromRequest(url):
     return json.loads(resp_json)
 
 def getHomePage(request):
-    # Prob have a set of variables
-
     # Calling the Ride offered by the driver
+    # Current Date
+    date = '2019-02-20-20'
   
-    driver_current_rides = getJsonFromRequest(createDriverURL(1, 5, '2020-02-20-20', 1))
-    driver_past_rides = getJsonFromRequest(createDriverURL(1, 5, '2020-02-20-20', 0))
+    driver_current_rides = getJsonFromRequest(createDriverURL(1, 5, date, 1))
+    driver_past_rides = getJsonFromRequest(createDriverURL(1, 5, date, 0))
 
-    passenger_current_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 1))
-    passenger_past_rides = getJsonFromRequest(createPassengerURL(1, 5, '2020-02-20-20', 0))
+    passenger_current_rides = getJsonFromRequest(createPassengerURL(1, 5, date, 1))
+    passenger_past_rides = getJsonFromRequest(createPassengerURL(1, 5, date, 0))
 
-    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, '2020-02-20-20',1))
+    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, date,1))
  
     return JsonResponse({
         "driver_current_rides":driver_current_rides,
@@ -74,7 +74,8 @@ def getDetailPage(request, pk):
 
     for passenger in passengers:
         passengers_json[str(passenger)] = getUser(passenger)
-    
+        
+
     #get vehicle info // lP, model, color
     #get driver info // FN, LN, P#, Profile URL
     #get passenger info // FN, LN, P#, Profile URL

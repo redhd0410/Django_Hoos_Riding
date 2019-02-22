@@ -30,24 +30,32 @@ def convertToDate(date):
     year = date[:4]
     return str(day+month+'/'+year)
 
-def convertRidesToDict(rides):
+def convertRidesToDict(rides,driver_id = -1):
 
-    rides_as_dict = {}
+    rides_as_dict = []
 
     for ride in rides:
-        rides_as_dict[ride.id] = {
+        passengers_ids = [user.id for user in model_to_dict(ride)['passengers']]
+        seats_filled = len(passengers_ids)
+        seats_left = ride.seats_offered - seats_filled
+        
+        rides_as_dict.append({
+            'special_time_fmt': ride.depart_time,
             'ride_id': ride.id,
             'vehicle': ride.vehicle.id,
-            'passengers': [user.id for user in model_to_dict(ride)['passengers']],
+            'passengers': passengers_ids,
             'destination': ride.destination,
             'start': ride.start,
            'hr': convertTime(ride.depart_time),
             'date': convertToDate(ride.depart_time),
             'seats_offered':ride.seats_offered,
-            'price':ride.price
-        }  
+            'price':ride.price,
+            'seats_left': seats_left,
+            'seats_filled': seats_filled,
+            'driver_id': driver_id,
+        }) 
 
-    return rides_as_dict
+    return {"rides":rides_as_dict}
 
 #Query Methods
 
@@ -55,26 +63,34 @@ def convertRidesToDict(rides):
 def getDriverRideHistory(request, pk, n, date, is_after):
     date = date.replace('-', '/')
     vehicles = Vehicle.objects.filter(driver = pk)
-    rides_for_all_vehicles = {}
+    rides_for_all_vehicles = []
+
     for vehicle in vehicles:
         if(is_after == 1):
             rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__gt = date).order_by('depart_time')[:n]
-            rides_for_all_vehicles[vehicle.id] = convertRidesToDict(rides)
+            rides_for_all_vehicles.extend(convertRidesToDict(rides)['rides'])
         elif(is_after == 0):
             rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__lte = date).order_by('depart_time')[:n]
-            rides_for_all_vehicles[vehicle.id] = convertRidesToDict(rides)
+            rides_for_all_vehicles.extend(convertRidesToDict(rides)['rides'])
         else:
             return JsonResponse({"error": "improper is_after url param! Can only be 1 or 0"})
+    
+    sorted_rides = sorted(rides_for_all_vehicles, key=lambda k: k['special_time_fmt'])
+
+    return JsonResponse({"rides":sorted_rides})
+   # return sorted(total_rides, key=lambda k: k['date']) 
+
+
     return JsonResponse(rides_for_all_vehicles)
 
 def getNUserRideHistory(request, pk, n, date, is_after):
     date = date.replace('-', '/')
     if(is_after == 1):
         rides = Ride.objects.filter(passengers=pk, depart_time__gt = date).order_by('depart_time')[:n]
-        return JsonResponse(convertRidesToDict(rides))
+        return JsonResponse(convertRidesToDict(rides,pk))
     elif(is_after == 0):
         rides = Ride.objects.filter(passengers=pk, depart_time__lte = date).order_by('depart_time')[:n]
-        return JsonResponse(convertRidesToDict(rides))
+        return JsonResponse(convertRidesToDict(rides,pk))
     else:
         return JsonResponse({"error": "Incorrect 'is_after' param! Should be 1 or 0 "})
 
@@ -89,6 +105,8 @@ def getNSoonestRides(request, n, date, is_after):
     #Gets all rides sorted where I get N rides that are oldest
     if(is_after == 1):
         rides = Ride.objects.filter(depart_time__gt = date).order_by('depart_time')[:n]
+        rides_arr = convertRidesToDict(rides)["rides"]
+        
         return JsonResponse(convertRidesToDict(rides))
     elif(is_after == 0):
         rides = Ride.objects.filter(depart_time__lte = date).order_by('depart_time')[:n]

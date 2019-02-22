@@ -16,12 +16,18 @@
               <h6 class="card-subtitle "">To : {{ride.destination}}</h6><br>
               <h6 class="card-subtitle "">Date : {{ride.depart_time}} </h6>
             </div>
+            <div class="card-body">
+                <h5 class="card-title">Car Information</h5>
+                <h6 class="card-subtitle "">Model: {{vehicle.model}}</h6><br>
+                <h6 class="card-subtitle "">Color :{{vehicle.color}} </h6> <br>
+                <h6 class="card-subtitle "">License Plate :{{vehicle.license_plate}} </h6> <br>
+              </div>
           </div>
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Driver's Information</h5>
               <h6 class="card-subtitle "">Name : {{driver.first_name}} {{driver.last_name}}</h6><br>
-              <h6 class="card-subtitle "">Phone Number :{{driver.phone}} </h6>
+              <h6 class="card-subtitle "">Phone Number :{{driver.phone_number}} </h6>
             </div>
           </div>
           <div class="card">
@@ -32,6 +38,7 @@
                 
                   <br>
                   <h6 class="card-subtitle ">Name : {{values.first_name}} {{values.last_name}}</h6>
+                  
                   <img src="{{values.profile_url}}"class = "center" style="width:100px; height:100x;">
                   <br>
                 </div>

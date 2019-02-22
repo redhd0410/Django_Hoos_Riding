@@ -8,8 +8,9 @@
         <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}">
     </head>
     <body>
-        <h1>Available Rides
-        </h1>
+        <h1>Available Rides - what everyone sees</h1>
+        <h2></h2>
+        <h7>Know your competition, driver!</h4>
         <table class="table">
                 <thead>
                   <tr>
@@ -18,20 +19,78 @@
                     <th scope="col">Time</th>
                     <th scope="col">date</th>
                     <th scope="col">seats</th>
+                    <th scope="col">price</th>
                   </tr>
                 </thead>
                 <tbody>
-                    {% for key, values in most_recent_rides_available.items %}
+                    {% for values in most_recent_rides_available.rides %}
                   <tr>
-                    <td><a href='/ridedetails/{{ key }}'> {{ values.start }}</a></td>
+                    
+                    <td><a href='/ridedetails/{{values.ride_id}}'> {{ values.start }}</a></td>
                     <td>{{ values.destination }}</td>
                     <td>{{ values.hr }}</td>
                     <td>{{ values.date }}</td>
-                    <td>{{ values.seats_offered }}</td>
+                    <td>{{values.seats_filled}}/{{ values.seats_offered }}</td>
+                    <td>{{ values.price }}</td>
                   </tr>
                   {% endfor %}
                  
                 </tbody>
               </table>
+
+              <h1>Rides Giving to others!</h1>
+              <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">From</th>
+                          <th scope="col">To</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">date</th>
+                          <th scope="col">seats</th>
+                          <th scope="col">price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          {% for values in driver_current_rides.rides %}
+                        <tr>
+                          
+                          <td><a href='/ridedetails/{{values.ride_id}}'> {{ values.start }}</a></td>
+                          <td>{{ values.destination }}</td>
+                          <td>{{ values.hr }}</td>
+                          <td>{{ values.date }}</td>
+                          <td>{{values.seats_filled}}/{{ values.seats_offered }}</td>
+                          <td>{{ values.price }}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+
+
+                    </table>
+                    <h1>Rides Going on!</h1>
+                    <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">From</th>
+                                <th scope="col">To</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">date</th>
+                                <th scope="col">seats</th>
+                                <th scope="col">price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for values in rides_getting_current_rides.rides %}
+                              <tr>
+                                
+                                <td><a href='/ridedetails/{{values.ride_id}}'> {{ values.start }}</a></td>
+                                <td>{{ values.destination }}</td>
+                                <td>{{ values.hr }}</td>
+                                <td>{{ values.date }}</td>
+                                <td>{{values.seats_filled}}/{{ values.seats_offered }}</td>
+                                <td>{{ values.price }}</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
     </body>
 </html>
