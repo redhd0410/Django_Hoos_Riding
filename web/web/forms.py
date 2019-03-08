@@ -1,8 +1,8 @@
 from django import forms
 
 class createaccountForm(forms.Form):
-    username = forms.CharField(max_length = 10, label="username")
-    password = forms.CharField(max_length = 10, label="password", widget=forms.PasswordInput())
+    username = forms.CharField(max_length = 20, label="username")
+    password = forms.CharField(max_length = 30, label="password", widget=forms.PasswordInput())
     first_name = forms.CharField(max_length=30, label="first name")
     last_name = forms.CharField(max_length=30, label="last name")
     phone_number = forms.CharField(max_length=11, label="phone_number")
@@ -14,3 +14,7 @@ class createListingForm(forms.Form):
     depart_time = forms.CharField(max_length=13)
     seats_offered = forms.IntegerField()
     price = forms.DecimalField()
+
+class loginForm(forms.Form):
+    user_id = forms.CharField(max_length = 20)
+    password = forms.CharField(max_length = 30, widget=forms.PasswordInput())

@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title> HoosRiding: Create Account </title>
+    <title> HoosRiding: Log In </title>
 </head>
 <body>
-    <h1> Create Your Account </h1>
+
+    <h1> Log In </h1>
     {% block content %}
     <form method="POST">
         {% csrf_token %}
-        {{ caform }} </br>
+        {{ loginform }} </br>
         <button type="submit">submit</button>
     </form>
     {% endblock %}
+    
 </body>
 </html>

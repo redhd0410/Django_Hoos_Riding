@@ -42,6 +42,18 @@ def createaccount(request):
     return render(request, 'createaccount.html', {'caform': caform})
 
 @csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        loginform = loginForm(request.POST)
+        if loginform.is_valid():
+            data = loginform.cleaned_data
+             #Sets cookie
+            return render(request, 'login.html', {'loginform': loginform})
+    else: 
+        loginform = loginForm()
+    return render(request, 'login.html', {'loginform': loginform})
+
+@csrf_exempt
 def homepage(request):
     auth_cookie = request.COOKIES.get('first_cookie')
     if(auth_cookie):
