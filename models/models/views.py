@@ -2,10 +2,18 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
+from datetime import datetime, timedelta
+from django.core import serializers
+
+# Used to generate authenticator
+import os
+import hmac
+from .settings import SECRET_KEY
 
 import json
-from .models import User, Vehicle, Ride
+from .models import User, Vehicle, Ride,Authenticator
 
+from django.contrib.auth import hashers 
 #Helper method
 #Convert rides queryset into dict & filters by depart time
 
@@ -24,16 +32,13 @@ def convertTime(date):
     return str(time)+am_or_pm
 
 def convertToDate(date):
-
     day = date[8:11]
     month = date[5:7]
     year = date[:4]
     return str(day+month+'/'+year)
 
 def convertRidesToDict(rides,driver_id = -1):
-
     rides_as_dict = []
-
     for ride in rides:
         passengers_ids = [user.id for user in model_to_dict(ride)['passengers']]
         seats_filled = len(passengers_ids)
@@ -57,7 +62,99 @@ def convertRidesToDict(rides,driver_id = -1):
 
     return {"rides":rides_as_dict}
 
+#returns true if time is greater or equal
+# Format is YYYY-MM-DD as strings
+def compareTime(old_time, new_time):
+    old_time = old_time.split("-")
+    new_time = new_time.split("-")
+
+    for i in range(3):
+        prev = int(old_time[i])
+        new = int(new_time[i])
+
+        if(prev > new):
+            return False
+
+        elif(prev < new):
+            return True
+
+        else:
+            pass
+
+    return True
+
+
+def isAuthTokenValid(request, auth_str):
+    if(request.method == "GET"):
+        pass
+    else:
+        return JsonResponse({"error": "Not a get"})
+    current_time = datetime.now().strftime("%Y-%m-%d")
+    current_time = datetime.now().replace(year= datetime.now().year+2).strftime("%Y-%m-%d")
+    try:
+        obj = Authenticator.objects.get(authenticator = auth_str)
+        if(compareTime(obj.date_created, current_time)):
+            return JsonResponse({"error": "Expired Token"})
+        else:
+            return JsonResponse({"valid": "Correct Token"})
+    except Authenticator.DoesNotExist:
+        return JsonResponse({"error": "Auth token does not exist!!"})
+
 #Query Methods
+@csrf_exempt
+def createAuthenticator(request, user_id):
+    user_model_instance = 0
+    if(request.method == "POST"):
+        pass
+        #Checks if user exist in DB
+        try:
+            user_model_instance = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "No user exist with id:"+str(user_id)})
+
+        #Creates authenticator
+        authenticator_str = hmac.new(
+            key = SECRET_KEY.encode('utf-8'),
+            msg = os.urandom(32),
+            digestmod = 'sha256',
+        ).hexdigest()
+  
+        # Does authenticator exist?
+        try:
+
+            obj = Authenticator.objects.get(authenticator = authenticator_str)
+            
+            return createAuthenticator(request, user_id)
+        except Authenticator.DoesNotExist:
+            
+            #Gets current and future time in case of update
+            current_time = datetime.now().strftime("%Y-%m-%d")
+            future_time = datetime.now().replace(year= datetime.now().year+1).strftime("%Y-%m-%d")
+            #Below line test date conditional
+            #current_time = future_time
+            
+            #Updates authenticator or creates new one for user
+            try:
+                authenticator = Authenticator.objects.get(user_id = user_id)
+                if(compareTime(authenticator.date_created, current_time)):
+                    authenticator.date_created = future_time
+                    authenticator.authenticator = authenticator_str
+                    authenticator.save()
+                 
+                #return JsonResponse({"error": "No reason to call. Authenticator valid!"})
+                return JsonResponse(model_to_dict(authenticator))
+
+            except Authenticator.DoesNotExist:
+                authenticator = Authenticator(
+                user = user_model_instance,
+                authenticator = authenticator_str,
+                date_created = future_time,
+                )
+                authenticator.save()
+                return JsonResponse(model_to_dict(authenticator))
+
+    return JsonResponse({"error": "Not a post method!"})
+
 
 # returns ride history or current rides given
 def getDriverRideHistory(request, pk, n, date, is_after):
@@ -94,10 +191,6 @@ def getNUserRideHistory(request, pk, n, date, is_after):
     else:
         return JsonResponse({"error": "Incorrect 'is_after' param! Should be 1 or 0 "})
 
-
-    
-
-
 # Home page thing, get rides from the soonest
 def getNSoonestRides(request, n, date, is_after):
     date = date.replace('-', '/')
@@ -127,14 +220,23 @@ def user(request, pk=-1):
 # profile_url:url
     elif request.method == 'POST':
         json_data = json.loads(str(request.body, encoding='utf-8'))
+        try:
+            user_model_instance = User.objects.get(username = json_data["username"])
+            return JsonResponse({"error": "Username Exist already"})
+        except User.DoesNotExist:
+            pass
+
         user = User(
             first_name=json_data["first_name"],
             last_name=json_data["last_name"],
             phone_number=json_data["phone_number"],
-            profile_url=json_data["profile_url"]
+            profile_url=json_data["profile_url"],
+            username = json_data["username"],
+            password = hashers.make_password(json_data["password"]),
             )
         user.save()
-        return JsonResponse(json_data)
+
+        return JsonResponse(model_to_dict(user))
 
 # first_name:str
 # last_name:str
@@ -197,6 +299,11 @@ def vehicle(request, pk=-1):
         return JsonResponse({"key": "value"})
     else:
         return HttpResponse(status=400)                
+
+def getAllVehicles(request):
+    data = serializers.serialize("json", Vehicle.objects.all())
+    struct = json.loads(data)
+    return HttpResponse(struct)
 
 @csrf_exempt
 def ride(request, pk=-1, uid = -1):

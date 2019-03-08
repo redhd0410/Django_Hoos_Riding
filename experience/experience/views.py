@@ -1,13 +1,14 @@
 import urllib.request
 import urllib.parse
 import json
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 
-#helper method
-
+#helper methods for easier api requests
+        
 # Home Page
 def createDriverURL(driver_id, number_of_rides, date, is_after):
     return 'http://models-api:8000/api/user/driver/id/'+str(driver_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
@@ -19,6 +20,7 @@ def createFetchAvailableRides(number_of_rides, date, is_after):
     return 'http://models-api:8000/api/rides/n/'+str(number_of_rides)+'/date/'+str(date)+'/'+str(is_after)
 
 # Detail Methods
+#Get methods
 def getRide(id):
     return getJsonFromRequest('http://models-api:8000/api/rides/'+str(id))
 def getVehicle(id):
@@ -27,13 +29,50 @@ def getVehicle(id):
 def getUser(id):
     return getJsonFromRequest('http://models-api:8000/api/users/'+str(id))
 
+def isGoodCookie(auth_str):
+    resp = getJsonFromRequest("http://models-api:8000/api/checkcookie/"+str(auth_str))
+    if("error" in resp):
+        return False
+    return True
+    
+#Post methods
+@csrf_exempt
+def createAccount(request):
+    resp = postJsonFromRequest("http://models-api:8000/api/users", request.body)    
+    if('error' in resp):
+        return JsonResponse(resp)
+    auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)
+    if('error' in auth_resp):
+        return JsonResponse(auth_resp)      
+    return JsonResponse({'authenticator':auth_resp['authenticator']})
+
+
+    
+
+
+# Experience layer function calls for internal user
 
 def getJsonFromRequest(url):
     req = urllib.request.Request(url)
     resp_json = urllib.request.urlopen(req).read().decode('utf-8')
     return json.loads(resp_json)
 
-def getHomePage(request):
+def postJsonFromRequest(url, body):
+    data = json.loads(str(body,encoding = 'utf-8'))
+    data = json.dumps(data)
+    data = str(data)   
+    post_encoded = data.encode('utf-8')
+    req = urllib.request.Request(url, data=post_encoded)    
+    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
+    return json.loads(resp_json)
+
+
+# Main Experience Layer(Called from Web Layer)
+def getHomePage(request, auth):
+    if(isGoodCookie(auth)):
+        pass
+    else:
+        return JsonResponse({"error": "invalid"})
     # Calling the Ride offered by the driver
     # Current Date
     date = '2019-02-20-20'
@@ -55,7 +94,11 @@ def getHomePage(request):
         })
         
 
-def getDetailPage(request, pk):
+def getDetailPage(request,auth, pk):
+    if(isGoodCookie(auth)):
+        pass
+    else:
+        return JsonResponse({"error": "invalid"})
 
     ride_json = getRide(pk)
     passengers = ride_json['passengers']
@@ -87,3 +130,5 @@ def getDetailPage(request, pk):
         "passengers":passengers_json,
         "vehicle": vehicle_json
     })
+
+        

@@ -1,6 +1,11 @@
 from django.db import models
-
+#python ./manage.py makemigrations models && python ./manage.py migrate models && python manage.py loaddata db.json && 
 class User(models.Model):
+    #Username
+    username = models.CharField(max_length =10, default = "username")
+    password = models.CharField(max_length = 148, default = "password")
+
+    #User Information
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone_number = models.CharField(max_length=11)
@@ -24,3 +29,10 @@ class Ride(models.Model):
     depart_time = models.CharField(max_length=13)
     seats_offered = models.PositiveSmallIntegerField()  # # of passengers < seats_offered
     price = models.PositiveSmallIntegerField() # In USD
+
+class Authenticator(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    authenticator = models.CharField(max_length = 64)
+    date_created = models.CharField(max_length=13)
+
+

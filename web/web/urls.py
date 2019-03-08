@@ -20,4 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'', views.homepage),
     path('ridedetails/<int:pk>', views.ridedetails),
+    path('createaccount/', views.createaccount, name="createaccount"),
+    #path('createlisting/', views.createListing, name="createlisting")
 ]
