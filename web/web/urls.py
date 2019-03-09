@@ -22,5 +22,6 @@ urlpatterns = [
     path('ridedetails/<int:pk>', views.ridedetails),
     path('createaccount/', views.createaccount, name="createaccount"),
     path('login/', views.login),
+    path('createlisting/', views.login)
     #path('createlisting/', views.createListing, name="createlisting")
 ]
