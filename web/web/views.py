@@ -53,6 +53,23 @@ def login(request):
         loginform = loginForm()
     return render(request, 'login.html', {'loginform': loginform})
 
+def createListing(request):
+    auth = request.COOKIES.get('first_cookie')
+    if not auth: 
+        return redirect(reverse("login") + "?next=" + reverse("createlisting"))
+
+    if request.method == 'GET':
+        form = createListingForm()
+        return render(request, 'createlisting.html', {'form': form})    
+
+    form = createListingForm(request.POST)
+    if (form.is_valid()):
+        data = form.cleaned_data
+        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting", data)
+        response = redirect('http://localhost:8000')
+        response.set_cookie('first_cookie',resp["authenticator"])
+        return response
+
 @csrf_exempt
 def homepage(request):
     auth_cookie = request.COOKIES.get('first_cookie')
