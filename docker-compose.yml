@@ -7,7 +7,7 @@ models:
     - ./models:/app
   ports:
     - "8001:8000"
-  command: bash -c "mod_wsgi-express start-server --working-directory ./ --reload-on-changes ./models/wsgi.py" && python manage.py loaddata db.json
+  command: bash -c "mod_wsgi-express start-server --working-directory ./ --reload-on-changes ./models/wsgi.py" && python manage.py loaddata db.json && python manage.py test models
 
 exp:
   image: tp33/django
