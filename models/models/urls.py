@@ -19,8 +19,8 @@ from . import views
 
 urlpatterns = [
     #AUTHENTICATOR#########################################
-    path('api/authenticator/<int:user_id>', views.createAuthenticator), #Returns authenticator
-    path('api/checkcookie/<str:auth_str>', views.isAuthTokenValid),
+    path('api/authenticator/<int:user_id>', views.createAuthenticator, name="createauthenticator"), #Returns authenticator
+    path('api/checkcookie/<str:auth_str>', views.isAuthTokenValid, name="checkcookie"),
     
     
     #MANY###########################################
