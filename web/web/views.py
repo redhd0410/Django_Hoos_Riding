@@ -53,6 +53,13 @@ def login(request):
         loginform = loginForm()
     return render(request, 'login.html', {'loginform': loginform})
 
+def LogOut(request):
+    auth_cookie = request.COOKIES.get('first_cookie')
+    response = redirect("http://localhost:8000")
+    if auth_cookie:
+        response.delete_cookie('first_cookie')
+    return response
+
 def createListing(request):
     auth = request.COOKIES.get('first_cookie')
     if not auth: 
