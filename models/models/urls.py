@@ -35,6 +35,7 @@ urlpatterns = [
     # Update/Delete/Get a User
     path('api/users/<int:pk>', views.user, name = "user_result_id"),
 
+    path('api/users/<str:auth_str>', views.getUserIdFromAuth),
 
     # Post & Get Many Vehicle
     path('api/vehicles', views.vehicle, name = "vehicle_result"),
@@ -42,7 +43,7 @@ urlpatterns = [
     # Update Vehicle & Get Vehicle
     path('api/vehicles/<int:pk>', views.vehicle, name = "vehicle_result_id"),
 
-
+    path('api/vehicles/<str:auth_str>', views.getVehicleIdFromAuth),
     # Post & Get Many Rides
     path('api/rides', views.ride, name = "ride_result"),
     #Get/Delete Single Ride

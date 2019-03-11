@@ -31,24 +31,8 @@ def getUser(id):
 
 def isGoodCookie(auth_str):
     resp = getJsonFromRequest("http://models-api:8000/api/checkcookie/"+str(auth_str))
-    if("error" in resp):
-        return False
-    return True
+    return resp
     
-#Post methods
-@csrf_exempt
-def createAccount(request):
-    resp = postJsonFromRequest("http://models-api:8000/api/users", request.body)    
-    if('error' in resp):
-        return JsonResponse(resp)
-    auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)
-    if('error' in auth_resp):
-        return JsonResponse(auth_resp)      
-    return JsonResponse({'authenticator':auth_resp['authenticator']})
-
-
-    
-
 
 # Experience layer function calls for internal user
 
@@ -68,14 +52,16 @@ def postJsonFromRequest(url, body):
 
 
 # Main Experience Layer(Called from Web Layer)
+@csrf_exempt
 def getHomePage(request, auth):
-    if(isGoodCookie(auth)):
+    cookie_response = isGoodCookie(auth)
+    if("error" not in cookie_response):
         pass
     else:
-        return JsonResponse({"error": "invalid"})
+        return HttpResponse(str(cookie_response))
     # Calling the Ride offered by the driver
     # Current Date
-    date = '2019-02-20-20'
+    date = '2019-03-10-20'
   
     driver_current_rides = getJsonFromRequest(createDriverURL(1, 5, date, 1))
     driver_past_rides = getJsonFromRequest(createDriverURL(1, 5, date, 0))
@@ -92,14 +78,14 @@ def getHomePage(request, auth):
         "rides_getting_past": passenger_past_rides,
         "most_recent_rides_available": most_recent_ride_availible
         })
-        
+
 
 def getDetailPage(request,auth, pk):
-    if(isGoodCookie(auth)):
+    cookie_response = isGoodCookie(auth)
+    if("error" not in cookie_response):
         pass
     else:
-        return JsonResponse({"error": "invalid"})
-
+        return HttpResponse(str(cookie_response))
     ride_json = getRide(pk)
     passengers = ride_json['passengers']
     vehicle_json = getVehicle(ride_json['vehicle'])
@@ -131,4 +117,33 @@ def getDetailPage(request,auth, pk):
         "vehicle": vehicle_json
     })
 
-        
+
+#Post methods
+@csrf_exempt
+def createListing(request, auth):
+    cookie_response = isGoodCookie(auth)
+    if("error" not in cookie_response):
+        pass
+    else:
+        return HttpResponse(str(cookie_response))
+
+    data = json.loads(str(request.body,encoding = 'utf-8'))
+    data["vehicle"] = getJsonFromRequest("http://models-api:8000/api/vehicles/"+str(auth))["vehicle_id"]
+   
+    data = json.dumps(data)
+    data = str(data)
+    post_encoded = data.encode('utf-8')
+    req = urllib.request.Request("http://models-api:8000/api/rides", data=post_encoded)    
+    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
+
+    return JsonResponse(resp_json)
+
+@csrf_exempt
+def createAccount(request):
+    resp = postJsonFromRequest("http://models-api:8000/api/users", request.body)    
+    if('error' in resp):
+        return JsonResponse(resp)
+    auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)
+    if('error' in auth_resp):
+        return JsonResponse(auth_resp)      
+    return JsonResponse({'authenticator':auth_resp['authenticator']})

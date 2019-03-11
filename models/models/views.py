@@ -90,7 +90,6 @@ def isAuthTokenValid(request, auth_str):
     else:
         return JsonResponse({"error": "Not a get"})
     current_time = datetime.now().strftime("%Y-%m-%d")
-    current_time = datetime.now().replace(year= datetime.now().year+2).strftime("%Y-%m-%d")
     try:
         obj = Authenticator.objects.get(authenticator = auth_str)
         if(compareTime(obj.date_created, current_time)):
@@ -99,6 +98,18 @@ def isAuthTokenValid(request, auth_str):
             return JsonResponse({"valid": "Correct Token"})
     except Authenticator.DoesNotExist:
         return JsonResponse({"error": "Auth token does not exist!!"})
+
+
+def getVehicleIdFromAuth(request, auth_str):
+    auth_obj = Authenticator.objects.get(authenticator = auth_str)
+    obj = Vehicle.objects.get(driver = auth_obj.user.id)
+
+    return JsonResponse({"vehicle_id": obj.id})
+
+def getUserIdFromAuth(request, auth_str):
+    obj = Authenticator.objects.get(authenticator = auth_str)
+    return JsonResponse({"user_id": obj.user.id})
+
 
 #Query Methods
 @csrf_exempt
@@ -155,27 +166,24 @@ def createAuthenticator(request, user_id):
 
     return JsonResponse({"error": "Not a post method!"})
 
-
 # returns ride history or current rides given
 def getDriverRideHistory(request, pk, n, date, is_after):
     date = date.replace('-', '/')
-    vehicles = Vehicle.objects.filter(driver = pk)
-    rides_for_all_vehicles = []
+    vehicle = Vehicle.objects.get(driver = pk)
+    rides_for_vehicle = []
 
-    for vehicle in vehicles:
-        if(is_after == 1):
-            rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__gt = date).order_by('depart_time')[:n]
-            rides_for_all_vehicles.extend(convertRidesToDict(rides)['rides'])
-        elif(is_after == 0):
-            rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__lte = date).order_by('depart_time')[:n]
-            rides_for_all_vehicles.extend(convertRidesToDict(rides)['rides'])
-        else:
-            return JsonResponse({"error": "improper is_after url param! Can only be 1 or 0"})
+    if(is_after == 1):
+        rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__gt = date).order_by('depart_time')[:n]
+        rides_for_vehicle = convertRidesToDict(rides)['rides']
+    elif(is_after == 0):
+        rides = Ride.objects.filter(vehicle = vehicle.id, depart_time__lte = date).order_by('depart_time')[:n]
+        rides_for_vehicle = convertRidesToDict(rides)['rides']
+    else:
+        return JsonResponse({"error": "improper is_after url param! Can only be 1 or 0"})
     
-    sorted_rides = sorted(rides_for_all_vehicles, key=lambda k: k['special_time_fmt'])
+    sorted_rides = sorted(rides_for_vehicle, key=lambda k: k['special_time_fmt'])
 
-    return JsonResponse({"rides":sorted_rides})
-   # return sorted(total_rides, key=lambda k: k['date']) 
+    return JsonResponse({"rides":rides_for_vehicle})
 
 
     return JsonResponse(rides_for_all_vehicles)
@@ -214,6 +222,8 @@ def user(request, pk=-1):
         user = User.objects.get(pk=pk)
         return JsonResponse(model_to_dict(user))
 
+# username:str
+# password:str
 # first_name:str
 # last_name:str
 # phone_number:str
@@ -263,11 +273,7 @@ def vehicle(request, pk=-1):
     if request.method == 'GET':
         vehicle = Vehicle.objects.get(pk=pk)
         return JsonResponse(model_to_dict(vehicle))
-# first_name:str
-# last_name:str
-# phone_number:str
-# profile_url:url
-# user_id:int
+
     elif request.method == 'POST':
         json_data = json.loads(str(request.body, encoding='utf-8'))
         user = User.objects.get(pk=json_data['driver'])

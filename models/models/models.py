@@ -15,7 +15,7 @@ class Vehicle(models.Model):
     license_plate = models.CharField(max_length=10)  # max allowed is 7.
     model = models.CharField(max_length=20)
     color = models.CharField(max_length=15)
-    driver = models.ForeignKey(User, on_delete=models.CASCADE)
+    driver = models.OneToOneField(User, on_delete=models.CASCADE)
     
 class Ride(models.Model):
     vehicle = models.ForeignKey(
@@ -28,10 +28,13 @@ class Ride(models.Model):
     # 2008/11/14/1 == 1pm on 11/14/2008
     depart_time = models.CharField(max_length=13)
     seats_offered = models.PositiveSmallIntegerField()  # # of passengers < seats_offered
-    price = models.PositiveSmallIntegerField() # In USD
+    price = models.IntegerField() # In USD
 
 class Authenticator(models.Model):
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+    )
     authenticator = models.CharField(max_length = 64)
     date_created = models.CharField(max_length=13)
 

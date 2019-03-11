@@ -10,8 +10,10 @@
     <body>
         <h1>Available Rides - what everyone sees</h1>
         <h2></h2>
-        <button type="button"> Log In </button> </br>
-        <button type="button"> Log Out </button> </br>
+        
+        <a class="btn btn-primary" href="{% url 'login'%}">Login</a>
+        <a class="btn btn-primary" href="{% url 'logout'%}">LogOut</a>
+        <a class="btn btn-primary" href="{% url 'createlisting'%}">Create Ride</a>
         <h7>Know your competition, driver!</h4>
         <table class="table">
                 <thead>

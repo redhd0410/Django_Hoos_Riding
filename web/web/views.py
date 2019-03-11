@@ -62,8 +62,8 @@ def LogOut(request):
     return response
 
 def createListing(request):
-    auth = request.COOKIES.get('first_cookie')
-    if not auth: 
+    auth_cookie = request.COOKIES.get('first_cookie')
+    if not auth_cookie: 
         return redirect(reverse("login") + "?next=" + reverse("createlisting"))
 
     if request.method == 'GET':
@@ -73,9 +73,9 @@ def createListing(request):
     form = createListingForm(request.POST)
     if (form.is_valid()):
         data = form.cleaned_data
-        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting", data)
+
+        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie), data)
         response = redirect('http://localhost:8000')
-        response.set_cookie('first_cookie',resp["authenticator"])
         return response
 
 @csrf_exempt
@@ -84,6 +84,7 @@ def homepage(request):
     if(auth_cookie):
         ride_information = getJsonFromRequest("http://exp-api:8000/experience/homepage/get/"+str(auth_cookie))
         if("error" in ride_information):
+            return HttpResponse(ride_information['error'])
             return redirect("http://localhost:8000/createaccount") 
         else:
             return render(request,'homepage.html', ride_information)

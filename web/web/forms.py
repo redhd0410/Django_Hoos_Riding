@@ -13,7 +13,7 @@ class createListingForm(forms.Form):
     start = forms.CharField(max_length=50)
     depart_time = forms.CharField(max_length=13)
     seats_offered = forms.IntegerField()
-    price = forms.DecimalField()
+    price = forms.IntegerField()
 
 class loginForm(forms.Form):
     user_id = forms.CharField(max_length = 20)
