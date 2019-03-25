@@ -11,7 +11,7 @@ import hmac
 from .settings import SECRET_KEY
 
 import json
-from .models import User, Vehicle, Ride,Authenticator
+from .models import User, Vehicle, Ride, Authenticator
 
 from django.contrib.auth import hashers 
 #Helper method
@@ -59,7 +59,6 @@ def convertRidesToDict(rides,driver_id = -1):
             'seats_filled': seats_filled,
             'driver_id': driver_id,
         }) 
-
     return {"rides":rides_as_dict}
 
 #returns true if time is greater or equal
@@ -169,7 +168,12 @@ def createAuthenticator(request, user_id):
 # returns ride history or current rides given
 def getDriverRideHistory(request, pk, n, date, is_after):
     date = date.replace('-', '/')
-    vehicle = Vehicle.objects.get(driver = pk)
+    Vehicle
+    try:
+        vehicle = Vehicle.objects.get(driver = pk)
+    except Vehicle.DoesNotExist:
+        return JsonResponse({"error": "no vehicle exists"})
+        
     rides_for_vehicle = []
 
     if(is_after == 1):

@@ -25,7 +25,10 @@ urlpatterns = [
     
     #MANY###########################################
     path('api/rides/n/<int:n>/date/<str:date>/<int:is_after>',views.getNSoonestRides, name = "getNSoonestRides"),
+   
     path('api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getNUserRideHistory, name = "getNUserRideHistory"),
+    
+    #Used for createDriverURL (fetches curr/past rides )
     path('api/user/driver/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>', views.getDriverRideHistory, name = "getDriverRideHistory"),
     
     
