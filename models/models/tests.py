@@ -20,40 +20,6 @@ class UserTestCase(TestCase):
         User.objects.create(first_name="Jiwon", last_name="Cha", phone_number="1209381092", profile_url="www.google.com", id = 1, username="jiwonC", password="hello")
         User.objects.create(first_name="Pablo", last_name="Ramos", phone_number="12381274", profile_url="www.google.com", id = 2, username="pabloR", password="password")
 
-    def test_user_get_request_param(self):
-        response = self.client.get(reverse('user_result_id', kwargs={'pk':1}))
-        self.assertContains(response, 'first_name')
-
-    def test_user_get_request_object(self):
-        response = self.client.get(reverse('user_result_id', kwargs={'pk':1}))
-        self.assertEqual(response.json()['first_name'], "Jiwon")
-
-    # check if returned the password
-    def test_user_by_username(self):
-        data = {
-            "phone_number": "121283789",
-            "first_name": "Hello",
-            "profile_url": "www.google.com",
-            "last_name": "Kitty", 
-            "password": "pw",
-            "username": "kittyH"
-            }
-        response = self.client.post(reverse('user_result_id', kwargs={'pk':3}), data, content_type="application/json")
-        response = self.client.get(reverse('get_username', kwargs={'username':'kittyH'}))
-        self.assertContains(response, 'password')
-
-    def test_username_duplicate(self):
-        data = {
-            "phone_number": "121283789",
-            "first_name": "Jiwon",
-            "profile_url": "www.google.com",
-            "last_name": "Choi", 
-            "password": "pw",
-            "username": "jiwonC"
-            }
-        response = self.client.post(reverse('user_result_id', kwargs={'pk':3}), data, content_type="application/json")
-        self.assertContains(response, "error")
-
     def test_user_post_request(self):
         data = {
             "phone_number": "121283789",
@@ -80,10 +46,7 @@ class UserTestCase(TestCase):
 
     def test_user_delete_request(self):
         response = self.client.delete(reverse('user_result_id', kwargs={'pk':1}))
-        try: 
-            faulty_access = self.client.get(reverse('user_result_id', kwargs={'pk':1}))
-        except ObjectDoesNotExist:
-            pass
+        self.assertContains(response, "key")
 
 class VehicleTestCase(TestCase):
     def setUp(self):
@@ -140,7 +103,7 @@ class RideTestCase(TestCase):
             "seats_offered": 4, 
             "id": 2
         }   
-        response = self.client.post(reverse('ride_result_id'), data, content_type="application/json")
+        response = self.client.post(reverse('ride_result_id', kwargs={'pk':1}), data, content_type="application/json")
         self.assertEqual(response.json()['start'], "Cville")
 
     def test_get_ride(self):
@@ -221,8 +184,8 @@ class QueryMethodTestCase(TestCase):
         json_data = response.json()
         authen = json_data['authenticator']
         cookie_resp = self.client.get(reverse('checkcookie', kwargs={'auth_str': authen}))
-        self.assertContains(cookie_resp, "Expired Token")
-
+        self.assertContains(cookie_resp, "valid")
+    
     # api/user/id/<int:pk>/rides/<int:n>/date/<str:date>/<int:is_after>
     def test_getNUserRideHistory_empty(self):
         Ride.objects.filter(pk=1).update()
@@ -260,7 +223,6 @@ class QueryMethodTestCase(TestCase):
     # User 3 is not a driver, so the ride list is empty
     def test_getDriverRideHistory_empty(self):
         resp = self.client.get(reverse('getDriverRideHistory', kwargs={'pk': 3, 'n': 2, 'date':"2000-01-01", 'is_after':1}))
-        all_rides = resp.json()['rides']
-        self.assertEquals(len(all_rides), 0)
+        self.assertContains(resp, 'error')
 
     
