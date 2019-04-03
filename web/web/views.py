@@ -22,8 +22,6 @@ def getJsonFromRequest(url):
 #
 @csrf_exempt
 def postJsonFromRequest(url, body):
-    if(url[len(url)-1] != "/"):
-        url = url + "/"
 
     #Does not convert from bytes
     data = json.dumps(body)
@@ -40,7 +38,7 @@ def createaccount(request):
         caform = createaccountForm(request.POST)
         if caform.is_valid():
             data = caform.cleaned_data
-            resp = postJsonFromRequest("http://exp-api:8000/experience/createaccount/", data)
+            resp = postJsonFromRequest("http://exp-api:8000/experience/createaccount", data)
              #Sets cookie
             response = redirect('http://localhost:8000')
             response.set_cookie('first_cookie',resp["authenticator"])
@@ -80,16 +78,17 @@ def createListing(request):
     if not auth_cookie: 
         return redirect(reverse("login") + "?next=" + reverse("createlisting"))
 
-    if request.method == 'GET':
-        form = createListingForm()
-        return render(request, 'createlisting.html', {'form': form})    
+    if request.method == 'POST':
 
-    form = createListingForm(request.POST)
-    if (form.is_valid()):
-        data = form.cleaned_data
-        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie)+"/", data)
-        response = redirect('http://localhost:8000')
-        return response
+        form = createListingForm(request.POST)
+        if (form.is_valid()):
+            data = form.cleaned_data
+            resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie), data)
+            response = redirect('http://localhost:8000')
+            return response
+
+    form = createListingForm()
+    return render(request, 'createlisting.html', {'form': form})    
 
 @csrf_exempt
 def homepage(request):

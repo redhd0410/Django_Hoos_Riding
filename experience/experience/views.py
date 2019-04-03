@@ -66,7 +66,7 @@ def Login(request):
 def createAccount(request):
     resp = postJsonFromRequest("http://models-api:8000/api/users/0", request.body)    	
     if('error' in resp):	
-        return JsonResponse(resp)	
+        return JsonResponse(resp)
 
     auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)	
     if('error' in auth_resp):	
@@ -120,7 +120,7 @@ def getHomePage(request, auth):
     # Current Date
     date = '2000-04-10-20'
   
-    #driver_current_rides = getJsonFromRequest(createGetDriverRideHistoryURL(1, 5, date, 1))
+    driver_current_rides = getJsonFromRequest(createGetDriverRideHistoryURL(1, 5, date, 1))
     #driver_past_rides = getJsonFromRequest(createGetDriverRideHistoryURL(1, 5, date, 0))
 
     passenger_current_rides = getJsonFromRequest(createGetNUserRideHistoryURL(1, 5, date, 1))
@@ -130,7 +130,7 @@ def getHomePage(request, auth):
  
     #return JsonResponse({"error": "testing"})
     return JsonResponse({
-        #"driver_current_rides":driver_current_rides,
+        "driver_current_rides":driver_current_rides,
         #"driver_previous_rides":driver_past_rides,
         #"rides_getting_current_rides": passenger_current_rides,
         #"rides_getting_past": passenger_past_rides,

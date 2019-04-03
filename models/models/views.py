@@ -279,38 +279,37 @@ def user(request, pk=-1):
 
 
         #Calling Login function
-        if('first_name' not in json_data):
-            try:
+        if('first_name' in json_data):
+            user = User(
+                first_name=json_data["first_name"],
+                last_name=json_data["last_name"],
+                phone_number=json_data["phone_number"],
+                profile_url=json_data["profile_url"],
+                username = json_data["username"],
+                password = hashers.make_password(json_data["password"]),
+                )
+            user.save()
+
+            return JsonResponse(model_to_dict(user))
+
+
+        try:
                 #Todo: reset one to one relationship correctly. 
                 # Switch parents from User -> to Authenticator.
                 # Reason: Authenticators should be created first, so I can access auth I think.
                 # Reexamine later on.
-                
-                user = User.objects.get(username =json_data['username'])
-                if(hashers.check_password(json_data["password"], user.password)):
+            user = User.objects.get(username =json_data['username'])
+            if(hashers.check_password(json_data["password"], user.password)):
                     
-                    auth = Authenticator.objects.get(id = user.id)
-                    return JsonResponse({"authenticator": auth.authenticator})
-                else:
-                    return JsonResponse({"error": "Incorrect username or password"})
+                auth = Authenticator.objects.get(id = user.id)
+                return JsonResponse({"authenticator": auth.authenticator})
+            else:
+                return JsonResponse({"error": "Incorrect username or password"})
                 #get auth token
                 #return auth token
-            except User.DoesNotExist:
-                return JsonResponse({"error": "Username or password incorrect!"})
+        except User.DoesNotExist:
+            return JsonResponse({"error": "Username or password incorrect!"})
         
-
-        user = User(
-            first_name=json_data["first_name"],
-            last_name=json_data["last_name"],
-            phone_number=json_data["phone_number"],
-            profile_url=json_data["profile_url"],
-            username = json_data["username"],
-            password = hashers.make_password(json_data["password"]),
-            )
-        user.save()
-
-        return JsonResponse(model_to_dict(user))
-
         # first_name:str
         # last_name:str
         # phone_number:str
