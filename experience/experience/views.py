@@ -11,11 +11,31 @@ from elasticsearch import Elasticsearch
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
 
+
+def convertTime(date):
+    #The param """""""is_after""""""""""""
+    # if it's 1, it means it's after this date
+    # date = 2020/20/02/10 & is_after = True then,
+    # It's gonna fetch all rides after 2020/20/02/10
+    date = date[11:]
+    am_or_pm = 'am'
+    time = int(date)
+    if(time>12):
+        time = time - 12
+        am_or_pm = 'pm'
+    return str(time)+am_or_pm
+def convertToDate(date):
+    day = date[8:11]
+    month = date[5:7]
+    year = date[:4]
+    return str(day+month+'/'+year)
+
 #
 #
 # HELPER METHODS TO FETCH MANY OBJECTS OF DATA
 #
 #
+
 
 @csrf_exempt
 def getJsonFromRequest(url):
@@ -100,15 +120,21 @@ def createListing(request, auth):
     #return HttpResponse(data)  
     post_encoded = data.encode('utf-8')
 
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
-    producer.send('ride-listings-topic', post_encoded)
-
     #Don't change the line below. It is forsaken
     req = urllib.request.Request("http://models-api:8000/api/rides/0", data=post_encoded)    
     
     resp_json = urllib.request.urlopen(req).read().decode('utf-8')
-    
     resp = json.loads(resp_json)
+
+    str_fmt = json.dumps(resp)
+
+    str_fmt = str(str_fmt)
+
+    post_encoded_new = str_fmt.encode('utf-8')
+    
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    producer.send('ride-listings-topic', post_encoded_new)
+
     return JsonResponse(resp)
 
 #
@@ -145,12 +171,14 @@ def getHomePage(request, auth):
         "most_recent_rides_available": most_recent_ride_availible
         })
 
-def getDetailPage(request,auth, pk):
+@csrf_exempt
+def getDetailPage(request,pk,auth):
     cookie_response = isGoodCookie(auth)
-    if("error" not in cookie_response):
-        pass
-    else:
+    if("error" in cookie_response):
         return HttpResponse(str(cookie_response))
+    else:
+        pass
+        
     ride_json = getRide(pk)
     passengers = ride_json['passengers']
     vehicle_json = getVehicle(ride_json['vehicle'])
@@ -163,6 +191,9 @@ def getDetailPage(request,auth, pk):
     del ride_json['passengers']
     del ride_json['seats_offered']
     del ride_json['vehicle']
+
+    #For security
+    del driver_json['password']
 
     passengers_json = {}
 
@@ -182,6 +213,39 @@ def getDetailPage(request,auth, pk):
         "vehicle": vehicle_json
     })
 
+@csrf_exempt
 def search(request, keyword):
     es = Elasticsearch(['es'])
-    return es.search(index='ride-list', body={'query': {'query_string': {'query': str(keyword)}}, 'size': 10})
+    raw_es_query = es.search(index='ride-list', body={'query': {'query_string': {'query': str(keyword)}}, 'size': 10})
+    
+    #return JsonResponse(raw_es_query)
+
+    raw_data = raw_es_query['hits']['hits']
+
+    rides_as_dict = []
+
+    for obj in raw_data:
+        ride = obj['_source']
+        #return JsonResponse(ride)
+        seats_filled = len(ride['passengers'])
+        seats_left = ride['seats_offered'] - seats_filled
+        
+        rides_as_dict.append({
+            'special_time_fmt': ride['depart_time'],
+            'ride_id': ride['id'],
+            'vehicle': ride['vehicle'],
+            'passengers': ride['passengers'],
+            'destination': ride['destination'],
+            'start': ride['start'],
+            'hr': convertTime(ride['depart_time']),
+            'date': convertToDate(ride['depart_time']),
+            'seats_offered':ride['seats_offered'],
+            'price':ride['price'],
+            'seats_left': seats_left,
+            'seats_filled': seats_filled,
+            'driver_id': 1,
+        })
+
+    
+    return JsonResponse({"rides": rides_as_dict})
+    

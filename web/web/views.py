@@ -105,16 +105,20 @@ def homepage(request):
 
 def ridedetails(request, pk):
     auth_cookie = request.COOKIES.get('first_cookie')
-    ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk)+"/"+ auth_cookie)
-    return render(request,'ridedetails.html', ride_information)
+    if(auth_cookie):
+        ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk)+"/"+ auth_cookie)
+        return render(request,'ridedetails.html', ride_information)
+    else:
+        return redirect("http://localhost:8000")
 
+@csrf_exempt
 def search(request):
     if request.method == 'POST':
         searchform = searchForm(request.POST)
         if (searchform.is_valid()):
             data = searchform.cleaned_data
             try: 
-                search_result = getJsonFromRequest("http://exp-api:8000/experience/search"+str(data['search_keyword']))
+                search_result = getJsonFromRequest("http://exp-api:8000/experience/search/"+str(data['search_keyword']))
                 context = {'searchform' : searchform, 'result': search_result}
                 return render(request, 'searchresult.html', context)
             except:

@@ -236,32 +236,9 @@ def user(request, pk=-1):
     if request.method == 'GET':
         #username
         #password
-        json_data = json.loads(str(request.body, encoding='utf-8'))
-        user = None
-        if(pk == 0):
-            try:
-                #Todo: reset one to one relationship correctly. 
-                # Switch parents from User -> to Authenticator.
-                # Reason: Authenticators should be created first, so I can access auth I think.
-                # Reexamine later on.
-
-                user = User.objects.get(username =json_data['username'])
-                if(hashers.check_password(json_data["password"], user.password)):
-                    
-                    auth = Authenticator.objects.get(id = user.id)
-                    return JsonResponse({"authenticator": auth.authenticator})
-                else:
-                    return JsonResponse({"error": "Incorrect username or password"})
-                #get auth token
-                #return auth token
-            except User.DoesNotExist:
-                return JsonResponse({"error": "Username or password incorrect!"})
-        
-        # pk:int - this is user id
-        else:
-            user = User.objects.get(pk=pk)
-            
+        user = User.objects.get(pk=pk)
         return JsonResponse(model_to_dict(user))
+    
     elif request.method == 'POST':
         
         # username:str
@@ -409,7 +386,7 @@ def ride(request, pk=-1, uid = -1):
             )
         ride.save()
 
-        return JsonResponse(json_data)
+        return JsonResponse(model_to_dict(ride))
     elif request.method == 'PUT':
         if(uid != -1):
             ride = Ride.objects.get(pk=pk)

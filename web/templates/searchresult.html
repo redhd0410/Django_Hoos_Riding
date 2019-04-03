@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title> HoosRiding: Search Result Page</title>
-</head>
+    <head>
+        <title>Homepage</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}">
+    </head>
+
 <body>
 	<h1> Search Result Page </h1>
 	{% block content %}
@@ -11,7 +17,32 @@
         {{ searchform }} </br>
         <button type="submit">submit</button>
     </form>
-    {{ result }}
     {% endblock %}
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
+            <th scope="col">Time</th>
+            <th scope="col">date</th>
+            <th scope="col">seats</th>
+            <th scope="col">price</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for values in result.rides %}
+          <tr>
+            <td><a href='/ridedetails/{{values.ride_id}}'> {{ values.start }}</a></td>
+            <td>{{ values.destination }}</td>
+            <td>{{ values.hr }}</td>
+            <td>{{ values.date }}</td>
+            <td>{{values.seats_filled}}/{{ values.seats_offered }}</td>
+            <td>{{ values.price }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
 </body>
 </html>
