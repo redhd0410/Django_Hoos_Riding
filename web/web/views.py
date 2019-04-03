@@ -113,6 +113,11 @@ def search(request):
         searchform = searchForm(request.POST)
         if (searchform.is_valid()):
             data = searchform.cleaned_data
+            try: 
+                search_result = getJsonFromRequest("http://exp-api:8000/experience/search"+str(data['search_keyword']))
+            except:
+                context = {'searchform' : searchform, 'result': "Data does not exist."}
+                return render(request, 'searchresult.html', context)
             return render(request, 'searchresult.html', {'searchform' : searchform})
     else: 
         searchform = searchForm()

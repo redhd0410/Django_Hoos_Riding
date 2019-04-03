@@ -4,7 +4,9 @@ import json
 
 es = Elasticsearch(['es'])
 
-consumer = KafkaConsumer('ride_listing', group_id='listing-indexer', bootstrap_servers=['kafka:9092'], auto_offset_reset = "earliest")
+consumer = KafkaConsumer('ride-listings-topic', group_id='listing-indexer', bootstrap_servers=['kafka:9092'])
 for message in consumer: 
-    es.index(index='listing_index', doc_type='rides', id=some_new_listing['id'], body=message)
-    es.indices.refresh(index='listing_index')
+    single_value = json.loads((message.value).decode('utf-8'))
+    print(single_value)
+    es.index(index='ride-list', doc_type='rides', id=single_value['id'], body=single_value)
+    es.indices.refresh(index="ride-list")

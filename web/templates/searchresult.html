@@ -10,7 +10,8 @@
         {% csrf_token %}
         {{ searchform }} </br>
         <button type="submit">submit</button>
-	</form>
+    </form>
+    {{ result }}
     {% endblock %}
 </body>
 </html>

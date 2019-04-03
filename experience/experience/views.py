@@ -181,3 +181,7 @@ def getDetailPage(request,auth, pk):
         "passengers":passengers_json,
         "vehicle": vehicle_json
     })
+
+def search(request, keyword):
+    es = Elasticsearch(['es'])
+    return es.search(index='ride-list', body={'query': {'query_string': {'query': str(keyword)}}, 'size': 10})

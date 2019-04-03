@@ -10,7 +10,7 @@ urlpatterns = [
     path('experience/homepage/get/<str:auth>', views.getHomePage),
     path('experience/detailpage/get/<int:pk>/<str:auth>', views.getDetailPage),
     path('experience/createlisting/<str:auth>', views.createListing),
-    
+    path('experience/search/<str:keyword>', views.search)
 ]
 
  #path('experience/homepage/update/<int:user_id>/<int:ride_id>', views.UpdateRide),
