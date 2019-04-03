@@ -4,7 +4,7 @@ import json
 
 es = Elasticsearch(['es'])
 
-consumer = KafkaConsumer('ride-listings-topic', group_id='listing-indexer', bootstrap_servers=['kafka:9092'])
+consumer = KafkaConsumer('ride-listings-topic', group_id='ride-indexer', bootstrap_servers=['kafka:9092'], api_version='0.9')
 for message in consumer: 
     single_value = json.loads((message.value).decode('utf-8'))
     print(single_value)
