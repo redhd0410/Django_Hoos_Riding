@@ -7,6 +7,10 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 
+from elasticsearch import Elasticsearch
+from kafka import KafkaConsumer
+from kafka import KafkaProducer
+
 #
 #
 # HELPER METHODS TO FETCH MANY OBJECTS OF DATA
@@ -86,6 +90,7 @@ def createListing(request, auth):
     #request.body["vehicle"] = 1
     data = json.loads(str(request.body,encoding = 'utf-8'))
 
+    
     data['vehicle'] = getJsonFromRequest("http://models-api:8000/api/auth/vehicles/"+str(auth))["vehicle_id"]
     #return HttpResponse(data['vehicle'])
     
@@ -94,6 +99,9 @@ def createListing(request, auth):
     data = str(data)
     #return HttpResponse(data)  
     post_encoded = data.encode('utf-8')
+
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
+    producer.send('ride-listings-topic', post_encoded)
 
     #Don't change the line below. It is forsaken
     req = urllib.request.Request("http://models-api:8000/api/rides/0", data=post_encoded)    

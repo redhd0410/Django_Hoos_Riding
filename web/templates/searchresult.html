@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> HoosRiding: Search Result Page</title>
+</head>
+<body>
+	<h1> Search Result Page </h1>
+	{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ searchform }} </br>
+        <button type="submit">submit</button>
+	</form>
+    {% endblock %}
+</body>
+</html>

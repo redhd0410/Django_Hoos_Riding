@@ -107,3 +107,13 @@ def ridedetails(request, pk):
     auth_cookie = request.COOKIES.get('first_cookie')
     ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk)+"/"+ auth_cookie)
     return render(request,'ridedetails.html', ride_information)
+
+def search(request):
+    if request.method == 'POST':
+        searchform = searchForm(request.POST)
+        if (searchform.is_valid()):
+            data = searchform.cleaned_data
+            return render(request, 'searchresult.html', {'searchform' : searchform})
+    else: 
+        searchform = searchForm()
+    return render(request, 'searchresult.html', {'searchform' : searchform})
