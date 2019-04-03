@@ -1,24 +1,11 @@
-"""experience URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('experience/login/', views.Login),
     path('experience/createaccount', views.createAccount),
+    
     path('admin/', admin.site.urls),
     path('experience/homepage/get/<str:auth>', views.getHomePage),
     path('experience/detailpage/get/<int:pk>/<str:auth>', views.getDetailPage),
@@ -26,4 +13,4 @@ urlpatterns = [
 ]
 
  #path('experience/homepage/update/<int:user_id>/<int:ride_id>', views.UpdateRide),
-    #path('experience/homepage/remove/<int:user_id>/<int:ride_id>', views.RemoveSelfRide),
+ #path('experience/homepage/remove/<int:user_id>/<int:ride_id>', views.RemoveSelfRide),

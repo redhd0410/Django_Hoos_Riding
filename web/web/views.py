@@ -9,21 +9,29 @@ from django.forms.models import model_to_dict
 import logging
 from web.forms import *
 
-#Logger definition
-# logger = logging.getLogger(__name__)
 
 def getJsonFromRequest(url):
+    #Force fixing issue
     req = urllib.request.Request(url)
     resp_json = urllib.request.urlopen(req).read().decode('utf-8')
     return json.loads(resp_json)
 
 # Only takes dictionaries as bodies 
+#
+# MUST HAVE FOWARD LAST AS LAST CHARACTER!!!!!! FOR URL
+#
+@csrf_exempt
 def postJsonFromRequest(url, body):
+    if(url[len(url)-1] != "/"):
+        url = url + "/"
+
+    #Does not convert from bytes
     data = json.dumps(body)
     data = str(data)   
     post_encoded = data.encode('utf-8')
-    req = urllib.request.Request(url, data=post_encoded)    
+    req = urllib.request.Request(url, data=post_encoded)  
     resp_json = urllib.request.urlopen(req).read().decode('utf-8')
+
     return json.loads(resp_json)
     
 @csrf_exempt
@@ -32,8 +40,7 @@ def createaccount(request):
         caform = createaccountForm(request.POST)
         if caform.is_valid():
             data = caform.cleaned_data
-            resp = postJsonFromRequest("http://exp-api:8000/experience/createaccount", data)
-             
+            resp = postJsonFromRequest("http://exp-api:8000/experience/createaccount/", data)
              #Sets cookie
             response = redirect('http://localhost:8000')
             response.set_cookie('first_cookie',resp["authenticator"])
@@ -48,8 +55,15 @@ def login(request):
         loginform = loginForm(request.POST)
         if loginform.is_valid():
             data = loginform.cleaned_data
-             #Sets cookie
-            return render(request, 'login.html', {'loginform': loginform})
+            #Sets cookie
+            resp = postJsonFromRequest("http://exp-api:8000/experience/login/", data)
+            
+            if("error" in resp):
+                return redirect("http://localhost:8000/login")
+
+            response = redirect('http://localhost:8000')
+            response.set_cookie('first_cookie',resp["authenticator"])
+            return response
     else: 
         loginform = loginForm()
     return render(request, 'login.html', {'loginform': loginform})
@@ -73,8 +87,7 @@ def createListing(request):
     form = createListingForm(request.POST)
     if (form.is_valid()):
         data = form.cleaned_data
-
-        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie), data)
+        resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie)+"/", data)
         response = redirect('http://localhost:8000')
         return response
 
@@ -92,9 +105,6 @@ def homepage(request):
         return redirect("http://localhost:8000/createaccount")
 
 def ridedetails(request, pk):
+    auth_cookie = request.COOKIES.get('first_cookie')
     ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk)+"/"+ auth_cookie)
     return render(request,'ridedetails.html', ride_information)
-
-#def createListing(request):
-#    form = createListingForm()
-#    return render(request, 'createListing.html', {'form': form})

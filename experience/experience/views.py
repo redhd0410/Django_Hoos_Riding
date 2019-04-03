@@ -7,40 +7,19 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 
-#helper methods for easier api requests
-        
-# Home Page
-def createDriverURL(driver_id, number_of_rides, date, is_after):
-    return 'http://models-api:8000/api/user/driver/id/'+str(driver_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
+#
+#
+# HELPER METHODS TO FETCH MANY OBJECTS OF DATA
+#
+#
 
-def createPassengerURL(rider_id, number_of_rides, date, is_after):
-    return 'http://models-api:8000/api/user/id/'+str(rider_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
-
-def createFetchAvailableRides(number_of_rides, date, is_after):
-    return 'http://models-api:8000/api/rides/n/'+str(number_of_rides)+'/date/'+str(date)+'/'+str(is_after)
-
-# Detail Methods
-#Get methods
-def getRide(id):
-    return getJsonFromRequest('http://models-api:8000/api/rides/'+str(id))
-def getVehicle(id):
-    return getJsonFromRequest('http://models-api:8000/api/vehicles/'+str(id))
-
-def getUser(id):
-    return getJsonFromRequest('http://models-api:8000/api/users/'+str(id))
-
-def isGoodCookie(auth_str):
-    resp = getJsonFromRequest("http://models-api:8000/api/checkcookie/"+str(auth_str))
-    return resp
-    
-
-# Experience layer function calls for internal user
-
+@csrf_exempt
 def getJsonFromRequest(url):
     req = urllib.request.Request(url)
     resp_json = urllib.request.urlopen(req).read().decode('utf-8')
     return json.loads(resp_json)
 
+@csrf_exempt 
 def postJsonFromRequest(url, body):
     data = json.loads(str(body,encoding = 'utf-8'))
     data = json.dumps(data)
@@ -51,34 +30,112 @@ def postJsonFromRequest(url, body):
     return json.loads(resp_json)
 
 
-# Main Experience Layer(Called from Web Layer)
+def createGetDriverRideHistoryURL(driver_id, number_of_rides, date, is_after):
+    return 'http://models-api:8000/api/user/driver/id/'+str(driver_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
+def createGetNUserRideHistoryURL(rider_id, number_of_rides, date, is_after):
+    return 'http://models-api:8000/api/user/id/'+str(rider_id)+ '/rides/'+str(number_of_rides) + '/date/'+str(date)+"/"+str(is_after)
+def createGetNSoonestRidesURL(number_of_rides, date, is_after):
+    return 'http://models-api:8000/api/rides/n/'+str(number_of_rides)+'/date/'+str(date)+'/'+str(is_after)
+
+#
+# HELPER METHODS TO STREAMLINE DATA FETCHING
+#
+
+def getRide(id):
+    return getJsonFromRequest('http://models-api:8000/api/rides/'+str(id))
+def getVehicle(id):
+    return getJsonFromRequest('http://models-api:8000/api/vehicles/'+str(id))
+def getUser(id):
+    return getJsonFromRequest('http://models-api:8000/api/users/'+str(id))
+def isGoodCookie(auth_str):
+    resp = getJsonFromRequest("http://models-api:8000/api/checkcookie/"+str(auth_str))
+    return resp
+
+#
+# POST METHODS 
+#
+
 @csrf_exempt
-def getHomePage(request, auth):
+def Login(request):
+    #data = json.loads(str(request.body,encoding = 'utf-8'))
+    #return JsonResponse(data)
+    resp = postJsonFromRequest("http://models-api:8000/api/users/0", request.body)
+    return JsonResponse(resp)
+
+@csrf_exempt
+def createAccount(request):
+    resp = postJsonFromRequest("http://models-api:8000/api/users/0", request.body)    	
+    if('error' in resp):	
+        return JsonResponse(resp)	
+
+    auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)	
+    if('error' in auth_resp):	
+        return JsonResponse(auth_resp)   
+
+    return JsonResponse({'authenticator':auth_resp['authenticator']})
+
+@csrf_exempt
+def createListing(request, auth):
     cookie_response = isGoodCookie(auth)
     if("error" not in cookie_response):
         pass
     else:
         return HttpResponse(str(cookie_response))
-    # Calling the Ride offered by the driver
-    # Current Date
-    date = '2019-03-10-20'
-  
-    driver_current_rides = getJsonFromRequest(createDriverURL(1, 5, date, 1))
-    driver_past_rides = getJsonFromRequest(createDriverURL(1, 5, date, 0))
 
-    passenger_current_rides = getJsonFromRequest(createPassengerURL(1, 5, date, 1))
-    passenger_past_rides = getJsonFromRequest(createPassengerURL(1, 5, date, 0))
+    #If Good
+    #request.body["vehicle"] = 1
+    data = json.loads(str(request.body,encoding = 'utf-8'))
+
+    data['vehicle'] = getJsonFromRequest("http://models-api:8000/api/auth/vehicles/"+str(auth))["vehicle_id"]
+    #return HttpResponse(data['vehicle'])
     
-    most_recent_ride_availible = getJsonFromRequest(createFetchAvailableRides(5, date,1))
+    data = json.dumps(data)
+
+    data = str(data)
+    #return HttpResponse(data)  
+    post_encoded = data.encode('utf-8')
+
+    #Don't change the line below. It is forsaken
+    req = urllib.request.Request("http://models-api:8000/api/rides/0", data=post_encoded)    
+    
+    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
+    
+    resp = json.loads(resp_json)
+    return JsonResponse(resp)
+
+#
+#
+# GET PAGE METHODS
+#
+#
+
+def getHomePage(request, auth):
+
+    cookie_response = isGoodCookie(auth)
+    if("error" not in cookie_response):
+        pass
+    else:
+        return HttpResponse(str(cookie_response))
+        
+    # Current Date
+    date = '2000-04-10-20'
+  
+    #driver_current_rides = getJsonFromRequest(createGetDriverRideHistoryURL(1, 5, date, 1))
+    #driver_past_rides = getJsonFromRequest(createGetDriverRideHistoryURL(1, 5, date, 0))
+
+    passenger_current_rides = getJsonFromRequest(createGetNUserRideHistoryURL(1, 5, date, 1))
+    #passenger_past_rides = getJsonFromRequest(createGetNUserRideHistoryURL(1, 5, date, 0))
+    
+    most_recent_ride_availible = getJsonFromRequest(createGetNSoonestRidesURL(5, date,1))
  
+    #return JsonResponse({"error": "testing"})
     return JsonResponse({
-        "driver_current_rides":driver_current_rides,
+        #"driver_current_rides":driver_current_rides,
         #"driver_previous_rides":driver_past_rides,
-        "rides_getting_current_rides": passenger_current_rides,
-        "rides_getting_past": passenger_past_rides,
+        #"rides_getting_current_rides": passenger_current_rides,
+        #"rides_getting_past": passenger_past_rides,
         "most_recent_rides_available": most_recent_ride_availible
         })
-
 
 def getDetailPage(request,auth, pk):
     cookie_response = isGoodCookie(auth)
@@ -91,7 +148,7 @@ def getDetailPage(request,auth, pk):
     vehicle_json = getVehicle(ride_json['vehicle'])
     driver_json = getUser(vehicle_json['driver'])
     
-#    seats_offered_json =ride_json['seats_offered']
+    #seats_offered_json =ride_json['seats_offered']
 
     #cleaning up needless data
     del vehicle_json['driver']
@@ -116,34 +173,3 @@ def getDetailPage(request,auth, pk):
         "passengers":passengers_json,
         "vehicle": vehicle_json
     })
-
-
-#Post methods
-@csrf_exempt
-def createListing(request, auth):
-    cookie_response = isGoodCookie(auth)
-    if("error" not in cookie_response):
-        pass
-    else:
-        return HttpResponse(str(cookie_response))
-
-    data = json.loads(str(request.body,encoding = 'utf-8'))
-    data["vehicle"] = getJsonFromRequest("http://models-api:8000/api/vehicles/"+str(auth))["vehicle_id"]
-   
-    data = json.dumps(data)
-    data = str(data)
-    post_encoded = data.encode('utf-8')
-    req = urllib.request.Request("http://models-api:8000/api/rides", data=post_encoded)    
-    resp_json = urllib.request.urlopen(req).read().decode('utf-8')
-
-    return JsonResponse(resp_json)
-
-@csrf_exempt
-def createAccount(request):
-    resp = postJsonFromRequest("http://models-api:8000/api/users", request.body)    
-    if('error' in resp):
-        return JsonResponse(resp)
-    auth_resp = postJsonFromRequest("http://models-api:8000/api/authenticator/"+str(resp['id']), request.body)
-    if('error' in auth_resp):
-        return JsonResponse(auth_resp)      
-    return JsonResponse({'authenticator':auth_resp['authenticator']})

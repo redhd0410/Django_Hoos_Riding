@@ -16,5 +16,5 @@ class createListingForm(forms.Form):
     price = forms.IntegerField()
 
 class loginForm(forms.Form):
-    user_id = forms.CharField(max_length = 20)
+    username = forms.CharField(max_length = 20)
     password = forms.CharField(max_length = 30, widget=forms.PasswordInput())

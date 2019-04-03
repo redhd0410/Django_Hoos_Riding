@@ -25,7 +25,7 @@ class Ride(models.Model):
     passengers = models.ManyToManyField(User)
     destination = models.CharField(max_length=50)
     start = models.CharField(max_length=50)
-    # 2008/11/14/1 == 1pm on 11/14/2008
+    # 2008/11/14/13 == 1pm on 11/14/2008
     depart_time = models.CharField(max_length=13)
     seats_offered = models.PositiveSmallIntegerField()  # # of passengers < seats_offered
     price = models.IntegerField() # In USD

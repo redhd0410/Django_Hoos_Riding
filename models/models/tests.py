@@ -9,6 +9,11 @@ from models.views import *
 from django.core.exceptions import ObjectDoesNotExist
 
 
+#
+#TODO: UPDATE CHANGES / REMOVE USER-RESULT
+#
+
+
 class UserTestCase(TestCase):
 
     def setUp(self):
@@ -135,7 +140,7 @@ class RideTestCase(TestCase):
             "seats_offered": 4, 
             "id": 2
         }   
-        response = self.client.post(reverse('ride_result'), data, content_type="application/json")
+        response = self.client.post(reverse('ride_result_id'), data, content_type="application/json")
         self.assertEqual(response.json()['start'], "Cville")
 
     def test_get_ride(self):
