@@ -18,3 +18,6 @@ class createListingForm(forms.Form):
 class loginForm(forms.Form):
     username = forms.CharField(max_length = 20)
     password = forms.CharField(max_length = 30, widget=forms.PasswordInput())
+
+class searchForm(forms.Form):
+    search_keyword = forms.CharField(max_length = 30)
