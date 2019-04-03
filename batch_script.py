@@ -14,18 +14,22 @@ with open('./models/db.json') as data:
             print('This is a user: ' + str(line))
             es.index(index='user-list', doc_type='users', id=line['pk'], body=line)
             es.indices.refresh(index="user-list")
+            print('Indexed it to Elasticsearch!')
         elif line['model'] == 'models.vehicle':
             print('This is a vehicle: ' + str(line))
             es.index(index='vehicle-list', doc_type='vehicles', id=line['pk'], body=line)
             es.indices.refresh(index="vehicle-list")
+            print('Indexed it to Elasticsearch!')
         elif line['model'] == 'models.ride':
             print('This is a ride: ' + str(line))
             es.index(index='ride-list', doc_type='rides', id=line['pk'], body=line)
             es.indices.refresh(index="ride-list")
+            print('Indexed it to Elasticsearch!')
         elif line['model'] == 'models.authenticator':
             print('This is an authenticator: ' + str(line))
             es.index(index='auth-list', doc_type='auths', id=line['pk'], body=line)
             es.indices.refresh(index="auth-list")
+            print('Indexed it to Elasticsearch!')
         
 
 consumer = KafkaConsumer('ride-listings-topic', group_id='ride-indexer', bootstrap_servers=['kafka:9092'], api_version='0.9')

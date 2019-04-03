@@ -227,20 +227,20 @@ def search(request, keyword):
     for obj in raw_data:
         ride = obj['_source']
         #return JsonResponse(ride)
-        seats_filled = len(ride['passengers'])
-        seats_left = ride['seats_offered'] - seats_filled
+        seats_filled = len(ride['fields']['passengers'])
+        seats_left = ride['fields']['seats_offered'] - seats_filled
         
         rides_as_dict.append({
-            'special_time_fmt': ride['depart_time'],
-            'ride_id': ride['id'],
-            'vehicle': ride['vehicle'],
-            'passengers': ride['passengers'],
-            'destination': ride['destination'],
-            'start': ride['start'],
-            'hr': convertTime(ride['depart_time']),
-            'date': convertToDate(ride['depart_time']),
-            'seats_offered':ride['seats_offered'],
-            'price':ride['price'],
+            'special_time_fmt': ride['fields']['depart_time'],
+            'ride_id': ride['pk'],
+            'vehicle': ride['fields']['vehicle'],
+            'passengers': ride['fields']['passengers'],
+            'destination': ride['fields']['destination'],
+            'start': ride['fields']['start'],
+            'hr': convertTime(ride['fields']['depart_time']),
+            'date': convertToDate(ride['fields']['depart_time']),
+            'seats_offered':ride['fields']['seats_offered'],
+            'price':ride['fields']['price'],
             'seats_left': seats_left,
             'seats_filled': seats_filled,
             'driver_id': 1,
