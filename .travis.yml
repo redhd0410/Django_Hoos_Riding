@@ -1,2 +1,13 @@
 language: python
-os: osx
+dist: trusty
+services:
+  - docker
+
+#Docker compose is already installed. If needed can update docker-compose version
+  env:
+  - DOCKER_COMPOSE_VERSION=1.4.2
+
+
+install: true 
+script:
+  - docker-compose up
