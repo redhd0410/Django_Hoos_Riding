@@ -26,6 +26,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['exp-api', 'localhost']
 
+SECRET_KEY = 't%x@j!9n6ueog5(xxw91=hmoaf3*l)@@!l4$ky!_$na(_9+96r'
+
 
 # Application definition
 

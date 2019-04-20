@@ -22,6 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ALLOWED_HOSTS = ['models-api', 'localhost']
 
+SECRET_KEY = '!ly*ray2+u*fm+kak(igrc%0e8qhiyl4&&e+lsmv7ihxyu6co^'
+
 
 # Application definition
 

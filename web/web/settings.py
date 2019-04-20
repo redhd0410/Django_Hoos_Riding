@@ -49,6 +49,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'web.urls'
 
+SECRET_KEY = '7zbra$7%n#mfykiah43a7)660%*+h!od7e@(ki=a=%m8t!0k0+'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
