@@ -17,11 +17,13 @@ before_install:
   - docker run -it --name mysql-cmdline --link mysql:db mysql:5.7.23 mysql -uroot -p'$3cureUS' -h db -e "create user 'www'@'%' identified by '$3cureUS'; create database cs4501 character set utf8; grant all on cs4501.* to 'www'@'%';"
 
 before_script:
-  - docker-compose up
+  - docker-compose up -d
   - sleep 20
 
 script: 
-  - docker ps
+  - docker start mysql
+  - docker start mysql-cmdline
+  - docker start models-api
   - docker exec -it models-api bash 
   - python manage.py test models
 
