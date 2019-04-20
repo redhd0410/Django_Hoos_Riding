@@ -40,5 +40,4 @@ while(True):
         single_value = json.loads((message.value).decode('utf-8'))
         print(single_value)
         es.index(index='ride-list', doc_type='rides', id=single_value['id'], body=single_value)
-        
         es.indices.refresh(index="ride-list")
