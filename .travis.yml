@@ -21,11 +21,7 @@ before_script:
   - sleep 20
 
 script: 
-  - docker start mysql
-  - docker start mysql-cmdline
-  - docker start models-api
-  - docker exec -it models-api bash 
-  - python manage.py test models
+  - docker exec -it models-api bash -c "python manage.py test models"
 
 after_script: 
   - docker-compose down
