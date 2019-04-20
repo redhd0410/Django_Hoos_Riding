@@ -24,5 +24,3 @@ script:
 
 after_script: 
   - docker-compose down
-
-os: osx
