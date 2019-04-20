@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't%x@j!9n6ueog5(xxw91=hmoaf3*l)@@!l4$ky!_$na(_9+96r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['exp-api', 'localhost']
 

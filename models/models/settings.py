@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!ly*ray2+u*fm+kak(igrc%0e8qhiyl4&&e+lsmv7ihxyu6co^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['models-api', 'localhost']
 
