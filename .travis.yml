@@ -18,10 +18,10 @@ before_install:
 
 before_script:
   - docker-compose up -d
+  - cd models
 
 script: 
-  - docker start models-api
-  - docker exec models-api bash -c "python manage.py test models"
+  - docker exec -it models-api bash -c "python manage.py test models"
 
 after_script: 
   - docker-compose down
