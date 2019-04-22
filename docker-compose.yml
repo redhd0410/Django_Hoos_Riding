@@ -74,7 +74,7 @@ selenium-test:
     - web:web
   volumes:
     - ./selenium:/app
-  #command: bash -c "pip install selenium==<some version number> && python <your_selenium_test_script>.py"
+  command: bash -c "pip install selenium==3.141.0 && python selenium_test.py"
   
 haproxy: 
   container_name: haproxy
