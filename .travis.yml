@@ -20,7 +20,7 @@ before_script:
   - docker-compose up -d
 
 script: 
-  - docker ps -aux
+  - docker ps -a
   - docker exec models-api bash -c "python manage.py test models"
 
 after_script: 
