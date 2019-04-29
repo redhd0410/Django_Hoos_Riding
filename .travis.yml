@@ -15,6 +15,10 @@ before_install:
   - sleep 10
   - docker ps -a
   - sleep 5
+  - docker start mysql-cmdline
+  - sleep 5
+  - docker ps -a
+  - sleep 5
 
 before_script:
   - docker-compose up -d
