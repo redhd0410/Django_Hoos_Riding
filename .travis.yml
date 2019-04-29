@@ -8,13 +8,13 @@ language: python
 
 before_install:
   - docker pull mysql:5.7.23
-  - docker pull tp33/django
   - mkdir db
   - docker run --name mysql -d -e MYSQL_ROOT_PASSWORD='$3cureUS' -v /db:/var/lib/mysql  mysql:5.7.23
   - sleep 20
   - docker run -it --name mysql-cmdline --link mysql:db mysql:5.7.23 mysql -uroot -p'$3cureUS' -h db -v -e "create user 'www'@'%' identified by '\$3cureUS'; create database cs4501 character set utf8; grant all privileges on *.* to 'www'@'%';"
   - docker rm mysql-cmdline
-
+  - docker start mysql-cmdline
+  
 before_script:
   - docker-compose up -d
 
