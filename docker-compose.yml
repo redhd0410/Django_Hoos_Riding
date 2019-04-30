@@ -33,7 +33,6 @@ web:
     - ./web:/app
   command: "mod_wsgi-express start-server --reload-on-changes ./web/wsgi.py"
 
-
 kafka:
    image: spotify/kafka
    container_name: kafka
