@@ -13,7 +13,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ form }}
-        <button type="submit">submit</button>
+        <button name="submit" id="submit" type="submit">submit</button>
         {% endblock %}
     </form>
     

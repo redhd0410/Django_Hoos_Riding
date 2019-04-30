@@ -4,7 +4,7 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from django.test import TestCase
+from django.test import TestCase, Client
 import time
 
 class TestSelenium(unittest.TestCase):
@@ -35,9 +35,52 @@ class TestSelenium(unittest.TestCase):
 
         driver.find_element_by_name("submit").click()
 
-        print(driver.current_url)
+        self.assertEquals(driver.current_url, "http://localhost:8000/")
 
-        pass
+    def testSearch(self):
+
+        # Log in first 
+        driver =self.driver
+        driver.get("http://web:8000/login")
+        username = driver.find_element_by_id("id_username")
+        password = driver.find_element_by_id("id_password")
+
+        username.send_keys("A")
+        password.send_keys("A")
+
+        driver.find_element_by_name("submit").click()
+        print(driver.current_url)
+        driver.find_element_by_name("create_ride").click()
+
+        # Fill in the create_ride form 
+        driver.find_element_by_id("id_start").send_keys("Start_Point")
+        driver.find_element_by_id("id_destination").send_keys("Destination_Point")
+        driver.find_element_by_id("id_depart_time").send_keys("2002/01/03/01")
+        driver.find_element_by_id("id_seats_offered").send_keys("4")
+        driver.find_element_by_id("id_price").send_keys("200")
+
+        driver.find_element_by_name("submit").click()
+
+        assert "Start_Point" in driver.page_source
+
+    def testlogout(self):
+
+        # Log in first
+        driver =self.driver
+        driver.get("http://web:8000/login")
+
+        username = driver.find_element_by_id("id_username")
+        password = driver.find_element_by_id("id_password")
+
+        username.send_keys("A")
+        password.send_keys("A")
+
+        driver.find_element_by_name("submit").click()
+        print(driver.current_url)
+        driver.find_element_by_name("logout").click()
+
+        self.assertEquals(driver.current_url, "http://localhost:8000/createaccount")
+
 
     def tearDown(self):
         self.driver.close()
