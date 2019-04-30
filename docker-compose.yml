@@ -7,11 +7,7 @@ models:
     - ./models:/app
   ports:
     - "8001:8000"
-  deploy:
-    resources:
-      limits:
-      cpu: '0.10'
-      memory: 50M
+  mem_limit: 50m
   command: bash -c "python ./manage.py makemigrations models && python ./manage.py migrate models && python manage.py loaddata db.json && mod_wsgi-express start-server --working-directory ./ --reload-on-changes ./models/wsgi.py"
 
 exp:
@@ -23,13 +19,9 @@ exp:
    # - kafka:kafka
   ports:
     - "8002:8000"
-  deploy:
-    resources:
-      limits:
-      cpu: '0.10'
-      memory: 50M
   volumes:
     - ./experience:/app
+  mem_limit: 50m
   command: "mod_wsgi-express start-server --reload-on-changes ./experience/wsgi.py"
 
 web:
@@ -40,12 +32,8 @@ web:
   ports:
     - "8000:8000"
   volumes:
+  mem_limit: 50m
     - ./web:/app
-  deploy:
-    resources:
-      limits:
-      cpu: '0.10'
-      memory: 50M
   command: "mod_wsgi-express start-server --reload-on-changes ./web/wsgi.py"
 
 
