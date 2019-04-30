@@ -32,8 +32,8 @@ web:
   ports:
     - "8000:8000"
   volumes:
-  mem_limit: 50m
     - ./web:/app
+  mem_limit: 50m  
   command: "mod_wsgi-express start-server --reload-on-changes ./web/wsgi.py"
 
 
