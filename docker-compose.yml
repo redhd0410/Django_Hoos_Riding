@@ -8,7 +8,7 @@ models:
   ports:
     - "8001:8000"
   mem_limit: 50m
-  command: bash -c "python ./manage.py makemigrations models && python ./manage.py migrate models && python manage.py loaddata db.json && mod_wsgi-express start-server --working-directory ./ --reload-on-changes ./models/wsgi.py"
+  command: bash -c "mod_wsgi-express start-server --reload-on-changes ./models/wsgi.py"
 
 exp:
   image: tp33/django
