@@ -4,6 +4,9 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from django.test import TestCase, Client
 import time
 
@@ -24,6 +27,21 @@ class TestSelenium(unittest.TestCase):
         driver.get("http://web:8000/login")
         assert "Log In" in driver.page_source
 
+    def testCreateAccount(self):
+        driver = self.driver
+        driver.get("http://web:8000/createaccount")
+        driver.find_element_by_id("id_username").send_keys("test1")
+        driver.find_element_by_id("id_password").send_keys("test1")
+        driver.find_element_by_id("id_first_name").send_keys("Jane")
+        driver.find_element_by_id("id_last_name").send_keys("Doe")
+        driver.find_element_by_id("id_phone_number").send_keys("0909090909")
+        driver.find_element_by_id("id_profile_url").send_keys("http://www.reddit.com/")
+
+        driver.find_element_by_name("submit").click()
+
+        self.assertEquals(driver.current_url, "http://localhost:8000/")
+
+
     def testLogInFunction(self):
         driver =self.driver
         driver.get("http://web:8000/login")
@@ -37,7 +55,21 @@ class TestSelenium(unittest.TestCase):
 
         self.assertEquals(driver.current_url, "http://localhost:8000/")
 
-    def testSearch(self):
+    def testRideDetails(self):
+        driver =self.driver
+        driver.get("http://web:8000/login")
+        username = driver.find_element_by_id("id_username")
+        password = driver.find_element_by_id("id_password")
+
+        username.send_keys("A")
+        password.send_keys("A")
+
+        driver.find_element_by_name("submit").click()
+        driver.find_element_by_xpath('/html/body/h7/table[1]/tbody/tr[1]/td[1]/a').click()
+
+        assert "BLACK" in driver.page_source
+
+    def testRideCreation(self):
 
         # Log in first 
         driver =self.driver
@@ -48,10 +80,9 @@ class TestSelenium(unittest.TestCase):
         username.send_keys("A")
         password.send_keys("A")
 
-        driver.find_element_by_name("submit").click()
-        print(driver.current_url)
+        driver.find_element_by_id("submit").click()
         driver.find_element_by_name("create_ride").click()
-
+        
         # Fill in the create_ride form 
         driver.find_element_by_id("id_start").send_keys("Start_Point")
         driver.find_element_by_id("id_destination").send_keys("Destination_Point")
@@ -76,8 +107,7 @@ class TestSelenium(unittest.TestCase):
         password.send_keys("A")
 
         driver.find_element_by_name("submit").click()
-        print(driver.current_url)
-        driver.find_element_by_name("logout").click()
+        driver.find_element_by_xpath('//*[@id="logout"]').click()
 
         self.assertEquals(driver.current_url, "http://localhost:8000/createaccount")
 

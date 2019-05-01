@@ -12,7 +12,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ caform }} </br>
-        <button type="submit">submit</button>
+        <button id="submit" name="submit" type="submit">submit</button>
     </form>
     {% endblock %}
     <a class="btn btn-primary" href="{% url 'login'%}">Login</a>
