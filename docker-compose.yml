@@ -80,6 +80,8 @@ haproxy:
   image: haproxy
   ports:
    - "80:80"
+  volumes:
+   - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
   links: 
     - web
 
