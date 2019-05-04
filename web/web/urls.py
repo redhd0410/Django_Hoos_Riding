@@ -1,6 +1,10 @@
 from django.contrib import admin
 from django.urls import path
 from web import views
+import django.views.static
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,3 +16,5 @@ urlpatterns = [
     path('logout/', views.LogOut, name="logout"),
     path('search/', views.search, name="search"),
 ]
+
+#urlpatterns += [   url(r'^static/(?P>path>.*)$', django.views.static.serve, {'document_root': settings.STATIC_ROOT, 'show_indexes': settings.DEBUG})]

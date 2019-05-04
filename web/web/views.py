@@ -9,6 +9,7 @@ from django.forms.models import model_to_dict
 import logging
 from web.forms import *
 
+home_url = "157.230.13.205"
 
 def getJsonFromRequest(url):
     #Force fixing issue
@@ -40,7 +41,7 @@ def createaccount(request):
             data = caform.cleaned_data
             resp = postJsonFromRequest("http://exp-api:8000/experience/createaccount", data)
              #Sets cookie
-            response = redirect('http://localhost:8000')
+            response = redirect("./")
             response.set_cookie('first_cookie',resp["authenticator"])
             return response
     else: 
@@ -57,9 +58,9 @@ def login(request):
             resp = postJsonFromRequest("http://exp-api:8000/experience/login/", data)
             
             if("error" in resp):
-                return redirect("http://localhost:8000/login")
+                return redirect("login")
 
-            response = redirect('http://localhost:8000')
+            response = redirect("./")
             response.set_cookie('first_cookie',resp["authenticator"])
             return response
     else: 
@@ -68,7 +69,7 @@ def login(request):
 
 def LogOut(request):
     auth_cookie = request.COOKIES.get('first_cookie')
-    response = redirect("http://localhost:8000")
+    response = redirect("./")
     if auth_cookie:
         response.delete_cookie('first_cookie')
     return response
@@ -84,7 +85,7 @@ def createListing(request):
         if (form.is_valid()):
             data = form.cleaned_data
             resp = postJsonFromRequest("http://exp-api:8000/experience/createlisting/"+str(auth_cookie), data)
-            response = redirect('http://localhost:8000')
+            response = redirect('')
             return response
 
     form = createListingForm()
@@ -97,11 +98,11 @@ def homepage(request):
         ride_information = getJsonFromRequest("http://exp-api:8000/experience/homepage/get/"+str(auth_cookie))
         if("error" in ride_information):
             return HttpResponse(ride_information['error'])
-            return redirect("http://localhost:8000/createaccount") 
+            return redirect("./") 
         else:
             return render(request,'homepage.html', ride_information)
     else:
-        return redirect("http://localhost:8000/createaccount")
+        return redirect("createaccount")
 
 def ridedetails(request, pk):
     auth_cookie = request.COOKIES.get('first_cookie')
@@ -109,7 +110,7 @@ def ridedetails(request, pk):
         ride_information = getJsonFromRequest("http://exp-api:8000/experience/detailpage/get/"+str(pk)+"/"+ auth_cookie)
         return render(request,'ridedetails.html', ride_information)
     else:
-        return redirect("http://localhost:8000")
+        return redirect("./")
 
 @csrf_exempt
 def search(request):
