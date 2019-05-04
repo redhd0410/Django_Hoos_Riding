@@ -41,7 +41,6 @@ class TestSelenium(unittest.TestCase):
 
         self.assertEquals(driver.current_url, "http://localhost:8000/")
 
-
     def testLogInFunction(self):
         driver =self.driver
         driver.get("http://web:8000/login")
@@ -56,6 +55,7 @@ class TestSelenium(unittest.TestCase):
         self.assertEquals(driver.current_url, "http://localhost:8000/")
 
     def testRideDetails(self):
+        
         driver =self.driver
         driver.get("http://web:8000/login")
         username = driver.find_element_by_id("id_username")
